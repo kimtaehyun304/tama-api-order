@@ -1,0 +1,2 @@
+1762962131687|95|rollback|connection 30|url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8||
+1762962131690|98|rollback|connection 29|url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8||

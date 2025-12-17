@@ -1,0 +1,660 @@
+2025-11-13 00:40:27.415  c.z.h.p.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h11m2s884ms592µs400ns). 
+2025-11-13 00:42:11.050  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 7 class path changes (0 additions, 0 deletions, 7 modifications) 
+2025-11-13 00:42:11.073  o.s.b.w.e.t.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete 
+2025-11-13 00:42:11.076  o.a.c.h.Http11NioProtocol - Pausing ProtocolHandler ["http-nio-5000"] 
+2025-11-13 00:42:11.104  o.e.t.c.c.d.RoutingDataSource - Selected DB: slave 
+2025-11-13 00:42:11.185  p6spy - #1762962131185 | took 74ms | statement | connection 16| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:42:11.187  p6spy - #1762962131187 | took 76ms | statement | connection 15| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:42:11.192  p6spy - #1762962131192 | took 1ms | statement | connection 16| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?,?,?,?,?,?,?,?,?,?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(1,2,3,4,5,6,7,8,9,10) and c1_0.sequence=1; 
+2025-11-13 00:42:11.194  p6spy - #1762962131194 | took 3ms | statement | connection 15| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?,?,?,?,?,?,?,?,?,?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(1,2,3,4,5,6,7,8,9,10) and c1_0.sequence=1; 
+2025-11-13 00:42:11.221  o.s.b.w.e.t.GracefulShutdown - Graceful shutdown complete 
+2025-11-13 00:42:11.222  p6spy - #1762962131222 | took 23ms | statement | connection 16| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(?,?,?,?,?,?,?,?,?,?) group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(1,2,3,4,5,6,7,8,9,10) group by c1_0.color_item_id; 
+2025-11-13 00:42:11.222  o.a.c.h.Http11NioProtocol - Stopping ProtocolHandler ["http-nio-5000"] 
+2025-11-13 00:42:11.224  p6spy - #1762962131224 | took 26ms | statement | connection 15| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(?,?,?,?,?,?,?,?,?,?) group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(1,2,3,4,5,6,7,8,9,10) group by c1_0.color_item_id; 
+2025-11-13 00:42:11.227  p6spy - #1762962131226 | took 1ms | commit | connection 16| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:42:11.228  p6spy - #1762962131228 | took 2ms | commit | connection 15| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:42:11.253  o.e.t.c.c.d.RoutingDataSource - Selected DB: slave 
+2025-11-13 00:42:11.258  p6spy - #1762962131258 | took 1ms | statement | connection 18| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=1; 
+2025-11-13 00:42:11.259  p6spy - #1762962131259 | took 2ms | statement | connection 17| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=1; 
+2025-11-13 00:42:11.263  p6spy - #1762962131263 | took 1ms | commit | connection 18| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:42:11.264  p6spy - #1762962131264 | took 2ms | commit | connection 17| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:42:11.268  o.e.t.c.c.d.RoutingDataSource - Selected DB: slave 
+2025-11-13 00:42:11.326  p6spy - #1762962131326 | took 53ms | statement | connection 20| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(1,2,3,4) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:42:11.328  p6spy - #1762962131328 | took 55ms | statement | connection 19| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(1,2,3,4) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:42:11.331  p6spy - #1762962131331 | took 1ms | statement | connection 20| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(NULL) and c1_0.sequence=1; 
+2025-11-13 00:42:11.333  p6spy - #1762962131333 | took 2ms | statement | connection 19| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(NULL) and c1_0.sequence=1; 
+2025-11-13 00:42:11.337  p6spy - #1762962131337 | took 1ms | statement | connection 20| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id; 
+2025-11-13 00:42:11.339  p6spy - #1762962131339 | took 3ms | statement | connection 19| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id; 
+2025-11-13 00:42:11.342  p6spy - #1762962131342 | took 1ms | commit | connection 20| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:42:11.343  p6spy - #1762962131343 | took 2ms | commit | connection 19| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:42:11.346  o.e.t.c.c.d.RoutingDataSource - Selected DB: slave 
+2025-11-13 00:42:11.351  p6spy - #1762962131351 | took 1ms | statement | connection 22| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=5; 
+2025-11-13 00:42:11.352  p6spy - #1762962131352 | took 2ms | statement | connection 21| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=5; 
+2025-11-13 00:42:11.355  p6spy - #1762962131355 | took 1ms | commit | connection 22| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:42:11.356  p6spy - #1762962131356 | took 2ms | commit | connection 21| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:42:11.361  o.e.t.c.c.d.RoutingDataSource - Selected DB: slave 
+2025-11-13 00:42:11.409  p6spy - #1762962131409 | took 44ms | statement | connection 24| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(5,6,7,8,9,10) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:42:11.410  p6spy - #1762962131410 | took 45ms | statement | connection 23| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(5,6,7,8,9,10) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:42:11.414  p6spy - #1762962131414 | took 1ms | statement | connection 24| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(NULL) and c1_0.sequence=1; 
+2025-11-13 00:42:11.415  p6spy - #1762962131415 | took 2ms | statement | connection 23| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(NULL) and c1_0.sequence=1; 
+2025-11-13 00:42:11.419  p6spy - #1762962131419 | took 1ms | statement | connection 24| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id; 
+2025-11-13 00:42:11.420  p6spy - #1762962131420 | took 2ms | statement | connection 23| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id; 
+2025-11-13 00:42:11.423  p6spy - #1762962131423 | took 1ms | commit | connection 24| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:42:11.424  p6spy - #1762962131424 | took 2ms | commit | connection 23| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:42:11.428  o.e.t.c.c.d.RoutingDataSource - Selected DB: slave 
+2025-11-13 00:42:11.432  p6spy - #1762962131432 | took 1ms | statement | connection 26| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=11; 
+2025-11-13 00:42:11.433  p6spy - #1762962131433 | took 2ms | statement | connection 25| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=11; 
+2025-11-13 00:42:11.437  p6spy - #1762962131437 | took 1ms | commit | connection 26| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:42:11.439  p6spy - #1762962131439 | took 2ms | commit | connection 25| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:42:11.443  o.e.t.c.c.d.RoutingDataSource - Selected DB: slave 
+2025-11-13 00:42:11.522  p6spy - #1762962131522 | took 75ms | statement | connection 28| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(11,12,13,14,15) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:42:11.523  p6spy - #1762962131523 | took 77ms | statement | connection 27| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(11,12,13,14,15) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:42:11.528  p6spy - #1762962131528 | took 1ms | statement | connection 28| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?,?,?,?,?,?,?,?,?,?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(1,2,3,4,5,6,7,8,9,10) and c1_0.sequence=1; 
+2025-11-13 00:42:11.530  p6spy - #1762962131530 | took 3ms | statement | connection 27| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?,?,?,?,?,?,?,?,?,?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(1,2,3,4,5,6,7,8,9,10) and c1_0.sequence=1; 
+2025-11-13 00:42:11.559  p6spy - #1762962131559 | took 26ms | statement | connection 28| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(?,?,?,?,?,?,?,?,?,?) group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(1,2,3,4,5,6,7,8,9,10) group by c1_0.color_item_id; 
+2025-11-13 00:42:11.561  p6spy - #1762962131561 | took 28ms | statement | connection 27| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(?,?,?,?,?,?,?,?,?,?) group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(1,2,3,4,5,6,7,8,9,10) group by c1_0.color_item_id; 
+2025-11-13 00:42:11.564  p6spy - #1762962131564 | took 1ms | commit | connection 28| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:42:11.565  p6spy - #1762962131565 | took 2ms | commit | connection 27| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:42:11.574  o.e.t.c.c.d.RoutingDataSource - Selected DB: slave 
+2025-11-13 00:42:11.575  o.s.b.f.s.DisposableBeanAdapter - Custom destroy method 'close' on bean with name 'orderIdReader' propagated an exception: org.springframework.batch.item.ItemStreamException: Error while closing item reader 
+2025-11-13 00:42:11.582  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default' 
+2025-11-13 00:42:11.585  c.z.h.HikariDataSource - HikariPool-1 - Shutdown initiated... 
+2025-11-13 00:42:11.587  p6spy - #1762962131587 | took 9ms | statement | connection 30| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select m1_0.member_id,m1_0.authority,m1_0.created_at,m1_0.email,m1_0.gender,m1_0.height,m1_0.nickname,m1_0.password,m1_0.phone,m1_0.point,m1_0.provider,m1_0.updated_at,m1_0.weight from member m1_0 where m1_0.authority=?
+select m1_0.member_id,m1_0.authority,m1_0.created_at,m1_0.email,m1_0.gender,m1_0.height,m1_0.nickname,m1_0.password,m1_0.phone,m1_0.point,m1_0.provider,m1_0.updated_at,m1_0.weight from member m1_0 where m1_0.authority='MEMBER'; 
+2025-11-13 00:42:11.589  p6spy - #1762962131589 | took 10ms | statement | connection 29| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select m1_0.member_id,m1_0.authority,m1_0.created_at,m1_0.email,m1_0.gender,m1_0.height,m1_0.nickname,m1_0.password,m1_0.phone,m1_0.point,m1_0.provider,m1_0.updated_at,m1_0.weight from member m1_0 where m1_0.authority=?
+select m1_0.member_id,m1_0.authority,m1_0.created_at,m1_0.email,m1_0.gender,m1_0.height,m1_0.nickname,m1_0.password,m1_0.phone,m1_0.point,m1_0.provider,m1_0.updated_at,m1_0.weight from member m1_0 where m1_0.authority='MEMBER'; 
+2025-11-13 00:42:11.595  c.z.h.HikariDataSource - HikariPool-1 - Shutdown completed. 
+2025-11-13 00:42:11.675  c.z.h.p.ProxyConnection - HikariPool-1 - Connection com.mysql.cj.jdbc.ConnectionImpl@2363efda marked as broken because of SQLSTATE(08003), ErrorCode(0) 
+java.sql.SQLNonTransientConnectionException: No operations allowed after connection closed.
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:102)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:89)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:81)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:55)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:65)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:64)
+	at com.mysql.cj.jdbc.ConnectionImpl.rollback(ConnectionImpl.java:1974)
+	at com.zaxxer.hikari.pool.ProxyConnection.rollback(ProxyConnection.java:386)
+	at com.zaxxer.hikari.pool.HikariProxyConnection.rollback(HikariProxyConnection.java)
+	at com.p6spy.engine.wrapper.ConnectionWrapper.rollback(ConnectionWrapper.java:182)
+	at com.p6spy.engine.wrapper.ConnectionWrapper.rollback(ConnectionWrapper.java:182)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy$LazyConnectionInvocationHandler.invoke(LazyConnectionDataSourceProxy.java:443)
+	at jdk.proxy2/jdk.proxy2.$Proxy107.rollback(Unknown Source)
+	at org.hibernate.resource.jdbc.internal.AbstractLogicalConnectionImplementor.rollback(AbstractLogicalConnectionImplementor.java:121)
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorImpl$TransactionDriverControlImpl.rollback(JdbcResourceLocalTransactionCoordinatorImpl.java:290)
+	at org.hibernate.engine.transaction.internal.TransactionImpl.rollback(TransactionImpl.java:142)
+	at org.springframework.orm.jpa.JpaTransactionManager.doRollback(JpaTransactionManager.java:589)
+	at org.springframework.transaction.support.AbstractPlatformTransactionManager.processRollback(AbstractPlatformTransactionManager.java:897)
+	at org.springframework.transaction.support.AbstractPlatformTransactionManager.rollback(AbstractPlatformTransactionManager.java:866)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.completeTransactionAfterThrowing(TransactionAspectSupport.java:716)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:384)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:138)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.data.jpa.repository.support.CrudMethodMetadataPostProcessor$CrudMethodMetadataPopulatingMethodInterceptor.invoke(CrudMethodMetadataPostProcessor.java:136)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:223)
+	at jdk.proxy4/jdk.proxy4.$Proxy165.findAllByAuthority(Unknown Source)
+	at org.example.tamaapi.scheduler.Scheduler.giveCoupon(Scheduler.java:91)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.scheduling.support.ScheduledMethodRunnable.runInternal(ScheduledMethodRunnable.java:130)
+	at org.springframework.scheduling.support.ScheduledMethodRunnable.lambda$run$2(ScheduledMethodRunnable.java:124)
+	at io.micrometer.observation.Observation.observe(Observation.java:498)
+	at org.springframework.scheduling.support.ScheduledMethodRunnable.run(ScheduledMethodRunnable.java:124)
+	at org.springframework.scheduling.config.Task$OutcomeTrackingRunnable.run(Task.java:85)
+	at org.springframework.scheduling.support.DelegatingErrorHandlingRunnable.run(DelegatingErrorHandlingRunnable.java:54)
+	at org.springframework.scheduling.concurrent.ReschedulingRunnable.run(ReschedulingRunnable.java:96)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: com.mysql.cj.exceptions.ConnectionIsClosedException: No operations allowed after connection closed.
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:499)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:480)
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:52)
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:95)
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:140)
+	at com.mysql.cj.NativeSession.checkClosed(NativeSession.java:929)
+	at com.mysql.cj.jdbc.ConnectionImpl.checkClosed(ConnectionImpl.java:565)
+	at com.mysql.cj.jdbc.ConnectionImpl.rollback(ConnectionImpl.java:1925)
+	... 44 common frames omitted
+2025-11-13 00:42:11.692  o.s.t.i.TransactionInterceptor - Application exception overridden by rollback exception 
+java.lang.IllegalStateException: Session/EntityManager is closed
+	at org.hibernate.internal.AbstractSharedSessionContract.checkOpen(AbstractSharedSessionContract.java:429)
+	at org.hibernate.engine.spi.SharedSessionContractImplementor.checkOpen(SharedSessionContractImplementor.java:186)
+	at org.hibernate.internal.AbstractSharedSessionContract.checkOpenOrWaitingForAutoClose(AbstractSharedSessionContract.java:447)
+	at org.hibernate.internal.SessionImpl.checkOpenOrWaitingForAutoClose(SessionImpl.java:616)
+	at org.hibernate.internal.SessionImpl.getPersistenceContext(SessionImpl.java:1801)
+	at org.hibernate.sql.results.graph.collection.internal.AbstractCollectionInitializer.resolveInstance(AbstractCollectionInitializer.java:95)
+	at org.hibernate.sql.results.graph.collection.internal.DelayedCollectionInitializer.resolveInstance(DelayedCollectionInitializer.java:39)
+	at org.hibernate.sql.results.internal.InitializersList.resolveInstances(InitializersList.java:87)
+	at org.hibernate.sql.results.internal.StandardRowReader.coordinateInitializers(StandardRowReader.java:110)
+	at org.hibernate.sql.results.internal.StandardRowReader.readRow(StandardRowReader.java:87)
+	at org.hibernate.sql.results.spi.ListResultsConsumer.consume(ListResultsConsumer.java:198)
+	at org.hibernate.sql.results.spi.ListResultsConsumer.consume(ListResultsConsumer.java:33)
+	at org.hibernate.sql.exec.internal.JdbcSelectExecutorStandardImpl.doExecuteQuery(JdbcSelectExecutorStandardImpl.java:360)
+	at org.hibernate.sql.exec.internal.JdbcSelectExecutorStandardImpl.executeQuery(JdbcSelectExecutorStandardImpl.java:168)
+	at org.hibernate.sql.exec.internal.JdbcSelectExecutorStandardImpl.list(JdbcSelectExecutorStandardImpl.java:93)
+	at org.hibernate.sql.exec.spi.JdbcSelectExecutor.list(JdbcSelectExecutor.java:31)
+	at org.hibernate.query.sqm.internal.ConcreteSqmSelectQueryPlan.lambda$new$0(ConcreteSqmSelectQueryPlan.java:113)
+	at org.hibernate.query.sqm.internal.ConcreteSqmSelectQueryPlan.withCacheableSqmInterpretation(ConcreteSqmSelectQueryPlan.java:325)
+	at org.hibernate.query.sqm.internal.ConcreteSqmSelectQueryPlan.performList(ConcreteSqmSelectQueryPlan.java:266)
+	at org.hibernate.query.sqm.internal.QuerySqmImpl.doList(QuerySqmImpl.java:519)
+	at org.hibernate.query.spi.AbstractSelectionQuery.list(AbstractSelectionQuery.java:367)
+	at org.hibernate.query.sqm.internal.QuerySqmImpl.list(QuerySqmImpl.java:1079)
+	at org.hibernate.query.Query.getResultList(Query.java:119)
+	at org.springframework.data.jpa.repository.query.JpaQueryExecution$CollectionExecution.doExecute(JpaQueryExecution.java:130)
+	at org.springframework.data.jpa.repository.query.JpaQueryExecution.execute(JpaQueryExecution.java:93)
+	at org.springframework.data.jpa.repository.query.AbstractJpaQuery.doExecute(AbstractJpaQuery.java:152)
+	at org.springframework.data.jpa.repository.query.AbstractJpaQuery.execute(AbstractJpaQuery.java:140)
+	at org.springframework.data.repository.core.support.RepositoryMethodInvoker.doInvoke(RepositoryMethodInvoker.java:170)
+	at org.springframework.data.repository.core.support.RepositoryMethodInvoker.invoke(RepositoryMethodInvoker.java:158)
+	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.doInvoke(QueryExecutorMethodInterceptor.java:170)
+	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.invoke(QueryExecutorMethodInterceptor.java:149)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.data.projection.DefaultMethodInvokingMethodInterceptor.invoke(DefaultMethodInvokingMethodInterceptor.java:69)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:380)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:138)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.data.jpa.repository.support.CrudMethodMetadataPostProcessor$CrudMethodMetadataPopulatingMethodInterceptor.invoke(CrudMethodMetadataPostProcessor.java:136)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:223)
+	at jdk.proxy4/jdk.proxy4.$Proxy165.findAllByAuthority(Unknown Source)
+	at org.example.tamaapi.scheduler.Scheduler.giveCoupon(Scheduler.java:91)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.scheduling.support.ScheduledMethodRunnable.runInternal(ScheduledMethodRunnable.java:130)
+	at org.springframework.scheduling.support.ScheduledMethodRunnable.lambda$run$2(ScheduledMethodRunnable.java:124)
+	at io.micrometer.observation.Observation.observe(Observation.java:498)
+	at org.springframework.scheduling.support.ScheduledMethodRunnable.run(ScheduledMethodRunnable.java:124)
+	at org.springframework.scheduling.config.Task$OutcomeTrackingRunnable.run(Task.java:85)
+	at org.springframework.scheduling.support.DelegatingErrorHandlingRunnable.run(DelegatingErrorHandlingRunnable.java:54)
+	at org.springframework.scheduling.concurrent.ReschedulingRunnable.run(ReschedulingRunnable.java:96)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+2025-11-13 00:42:11.700  o.s.s.s.TaskUtils$LoggingErrorHandler - Unexpected error occurred in scheduled task 
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'dataBaseConfig': Unsatisfied dependency expressed through field 'dataBaseProperty': Error creating bean with name 'dataBaseProperty': Could not bind properties to 'DataBaseProperty' : prefix=spring.datasource, ignoreInvalidFields=false, ignoreUnknownFields=true
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:788)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:768)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:146)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:509)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1441)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:289)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:413)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1357)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1187)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:289)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1573)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1519)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolvePreparedArguments(ConstructorResolver.java:845)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:452)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1357)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1187)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:289)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:312)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory$1.orderedStream(DefaultListableBeanFactory.java:503)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.detectPersistenceExceptionTranslators(PersistenceExceptionTranslationInterceptor.java:175)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:151)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.data.jpa.repository.support.CrudMethodMetadataPostProcessor$CrudMethodMetadataPopulatingMethodInterceptor.invoke(CrudMethodMetadataPostProcessor.java:136)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:223)
+	at jdk.proxy4/jdk.proxy4.$Proxy165.findAllByAuthority(Unknown Source)
+	at org.example.tamaapi.scheduler.Scheduler.giveCoupon(Scheduler.java:91)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.scheduling.support.ScheduledMethodRunnable.runInternal(ScheduledMethodRunnable.java:130)
+	at org.springframework.scheduling.support.ScheduledMethodRunnable.lambda$run$2(ScheduledMethodRunnable.java:124)
+	at io.micrometer.observation.Observation.observe(Observation.java:498)
+	at org.springframework.scheduling.support.ScheduledMethodRunnable.run(ScheduledMethodRunnable.java:124)
+	at org.springframework.scheduling.config.Task$OutcomeTrackingRunnable.run(Task.java:85)
+	at org.springframework.scheduling.support.DelegatingErrorHandlingRunnable.run(DelegatingErrorHandlingRunnable.java:54)
+	at org.springframework.scheduling.concurrent.ReschedulingRunnable.run(ReschedulingRunnable.java:96)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.springframework.boot.context.properties.ConfigurationPropertiesBindException: Error creating bean with name 'dataBaseProperty': Could not bind properties to 'DataBaseProperty' : prefix=spring.datasource, ignoreInvalidFields=false, ignoreUnknownFields=true
+	at org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor.bind(ConfigurationPropertiesBindingPostProcessor.java:99)
+	at org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor.postProcessBeforeInitialization(ConfigurationPropertiesBindingPostProcessor.java:79)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:423)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:289)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1573)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1519)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:785)
+	... 60 common frames omitted
+Caused by: java.lang.IllegalStateException: org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@5dcbc8db has been closed already
+	at org.springframework.context.support.AbstractApplicationContext.assertBeanFactoryActive(AbstractApplicationContext.java:1256)
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1277)
+	at org.springframework.boot.context.properties.BoundConfigurationProperties.get(BoundConfigurationProperties.java:76)
+	at org.springframework.boot.context.properties.ConfigurationPropertiesBinder.getHandler(ConfigurationPropertiesBinder.java:144)
+	at org.springframework.boot.context.properties.ConfigurationPropertiesBinder.getBindHandler(ConfigurationPropertiesBinder.java:113)
+	at org.springframework.boot.context.properties.ConfigurationPropertiesBinder.bind(ConfigurationPropertiesBinder.java:93)
+	at org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor.bind(ConfigurationPropertiesBindingPostProcessor.java:96)
+	... 72 common frames omitted
+2025-11-13 00:42:12.246  o.e.t.TamaApiApplication - Starting TamaApiApplication using Java 17 with PID 24116 (C:\Users\user2208\Desktop\sub_port_folio\tama-api-replication\build\classes\java\main started by user2208 in C:\Users\user2208\Desktop\sub_port_folio\tama-api-replication) 
+2025-11-13 00:42:12.247  o.e.t.TamaApiApplication - The following 1 profile is active: "local" 
+2025-11-13 00:42:16.221  o.s.b.c.c.a.BatchRegistrar - Finished Spring Batch infrastructure beans configuration in 0 ms. 
+2025-11-13 00:42:16.878  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode. 
+2025-11-13 00:42:17.992  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 1111 ms. Found 28 JPA repository interfaces. 
+2025-11-13 00:42:18.807  o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port 5000 (http) 
+2025-11-13 00:42:18.808  o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-5000"] 
+2025-11-13 00:42:18.809  o.a.c.c.StandardService - Starting service [Tomcat] 
+2025-11-13 00:42:18.809  o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34] 
+2025-11-13 00:42:19.683  o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext 
+2025-11-13 00:42:19.684  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 7409 ms 
+2025-11-13 00:42:19.935  o.e.t.c.c.d.RoutingDataSource - Selected DB: master 
+2025-11-13 00:42:19.935  c.z.h.HikariDataSource - HikariPool-2 - Starting... 
+2025-11-13 00:42:19.954  c.z.h.p.HikariPool - HikariPool-2 - Added connection com.mysql.cj.jdbc.ConnectionImpl@46b0c586 
+2025-11-13 00:42:19.955  c.z.h.HikariDataSource - HikariPool-2 - Start completed. 
+2025-11-13 00:42:19.957  o.e.t.c.c.d.RoutingDataSource - Selected DB: master 
+2025-11-13 00:42:20.289  o.h.j.i.u.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default] 
+2025-11-13 00:42:20.438  o.h.b.i.BytecodeProviderInitiator - HHH000021: Bytecode provider name : bytebuddy 
+2025-11-13 00:42:20.438  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer 
+2025-11-13 00:42:20.450  o.e.t.c.c.d.RoutingDataSource - Selected DB: master 
+2025-11-13 00:42:20.454  SQL dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect 
+2025-11-13 00:42:20.593  o.h.b.i.BytecodeProviderInitiator - HHH000021: Bytecode provider name : bytebuddy 
+2025-11-13 00:42:20.978  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform] 
+2025-11-13 00:42:20.979  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default' 
+2025-11-13 00:42:22.764  o.e.t.c.c.d.RoutingDataSource - Selected DB: master 
+2025-11-13 00:42:22.832  p6spy - #1762962142832 | took 65ms | statement | connection 38| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:42:22.833  p6spy - #1762962142833 | took 65ms | statement | connection 37| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:42:22.837  p6spy - #1762962142837 | took 1ms | statement | connection 38| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?,?,?,?,?,?,?,?,?,?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(1,2,3,4,5,6,7,8,9,10) and c1_0.sequence=1; 
+2025-11-13 00:42:22.838  p6spy - #1762962142838 | took 2ms | statement | connection 37| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?,?,?,?,?,?,?,?,?,?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(1,2,3,4,5,6,7,8,9,10) and c1_0.sequence=1; 
+2025-11-13 00:42:22.870  p6spy - #1762962142870 | took 21ms | statement | connection 38| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(?,?,?,?,?,?,?,?,?,?) group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(1,2,3,4,5,6,7,8,9,10) group by c1_0.color_item_id; 
+2025-11-13 00:42:22.870  p6spy - #1762962142870 | took 21ms | statement | connection 37| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(?,?,?,?,?,?,?,?,?,?) group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(1,2,3,4,5,6,7,8,9,10) group by c1_0.color_item_id; 
+2025-11-13 00:42:22.875  p6spy - #1762962142875 | took 1ms | statement | connection 38| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=1; 
+2025-11-13 00:42:22.875  p6spy - #1762962142875 | took 1ms | statement | connection 37| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=1; 
+2025-11-13 00:42:22.915  p6spy - #1762962142915 | took 36ms | statement | connection 38| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(1,2,3,4) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:42:22.915  p6spy - #1762962142915 | took 36ms | statement | connection 37| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(1,2,3,4) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:42:22.918  p6spy - #1762962142918 | took 1ms | statement | connection 38| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(NULL) and c1_0.sequence=1; 
+2025-11-13 00:42:22.918  p6spy - #1762962142918 | took 1ms | statement | connection 37| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(NULL) and c1_0.sequence=1; 
+2025-11-13 00:42:22.921  p6spy - #1762962142921 | took 1ms | statement | connection 38| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id; 
+2025-11-13 00:42:22.922  p6spy - #1762962142922 | took 1ms | statement | connection 37| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id; 
+2025-11-13 00:42:22.925  p6spy - #1762962142925 | took 1ms | statement | connection 38| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=5; 
+2025-11-13 00:42:22.925  p6spy - #1762962142925 | took 1ms | statement | connection 37| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=5; 
+2025-11-13 00:42:22.960  p6spy - #1762962142960 | took 33ms | statement | connection 38| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(5,6,7,8,9,10) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:42:22.960  p6spy - #1762962142960 | took 33ms | statement | connection 37| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(5,6,7,8,9,10) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:42:22.964  p6spy - #1762962142964 | took 1ms | statement | connection 38| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(NULL) and c1_0.sequence=1; 
+2025-11-13 00:42:22.964  p6spy - #1762962142964 | took 1ms | statement | connection 37| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(NULL) and c1_0.sequence=1; 
+2025-11-13 00:42:22.966  p6spy - #1762962142966 | took 1ms | statement | connection 38| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id; 
+2025-11-13 00:42:22.967  p6spy - #1762962142967 | took 1ms | statement | connection 37| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id; 
+2025-11-13 00:42:22.970  p6spy - #1762962142970 | took 1ms | statement | connection 38| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=11; 
+2025-11-13 00:42:22.970  p6spy - #1762962142970 | took 1ms | statement | connection 37| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=11; 
+2025-11-13 00:42:23.029  p6spy - #1762962143029 | took 56ms | statement | connection 38| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(11,12,13,14,15) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:42:23.030  p6spy - #1762962143030 | took 56ms | statement | connection 37| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(11,12,13,14,15) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:42:23.033  p6spy - #1762962143033 | took 1ms | statement | connection 38| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?,?,?,?,?,?,?,?,?,?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(1,2,3,4,5,6,7,8,9,10) and c1_0.sequence=1; 
+2025-11-13 00:42:23.034  p6spy - #1762962143034 | took 1ms | statement | connection 37| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?,?,?,?,?,?,?,?,?,?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(1,2,3,4,5,6,7,8,9,10) and c1_0.sequence=1; 
+2025-11-13 00:42:23.057  p6spy - #1762962143057 | took 21ms | statement | connection 38| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(?,?,?,?,?,?,?,?,?,?) group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(1,2,3,4,5,6,7,8,9,10) group by c1_0.color_item_id; 
+2025-11-13 00:42:23.058  p6spy - #1762962143058 | took 22ms | statement | connection 37| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(?,?,?,?,?,?,?,?,?,?) group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(1,2,3,4,5,6,7,8,9,10) group by c1_0.color_item_id; 
+2025-11-13 00:42:23.060  p6spy - #1762962143060 | took 0ms | commit | connection 38| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:42:23.060  p6spy - #1762962143060 | took 1ms | commit | connection 37| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:42:23.063  o.e.t.c.c.d.RoutingDataSource - Selected DB: master 
+2025-11-13 00:42:23.064  o.s.b.c.r.s.JobRepositoryFactoryBean - No database type set, using meta data indicating: MYSQL 
+2025-11-13 00:42:23.096  o.s.b.c.l.s.TaskExecutorJobLauncher - No TaskExecutor has been set, defaulting to synchronous executor. 
+2025-11-13 00:42:23.165  o.s.b.c.c.a.BatchObservabilityBeanPostProcessor - No Micrometer observation registry found, defaulting to ObservationRegistry.NOOP 
+2025-11-13 00:42:23.179  o.s.b.c.c.a.BatchObservabilityBeanPostProcessor - No Micrometer observation registry found, defaulting to ObservationRegistry.NOOP 
+2025-11-13 00:42:24.598  o.e.t.c.c.d.RoutingDataSource - Selected DB: master 
+2025-11-13 00:42:24.598  o.e.t.c.c.d.RoutingDataSource - Selected DB: master 
+2025-11-13 00:42:24.599  o.s.b.a.h.H2ConsoleAutoConfiguration - H2 console available at '/h2-console'. Databases available at 'jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8', 'jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8', 'jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8' 
+2025-11-13 00:42:24.699  o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729 
+2025-11-13 00:42:24.716  o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-5000"] 
+2025-11-13 00:42:24.725  o.s.b.w.e.t.TomcatWebServer - Tomcat started on port 5000 (http) with context path '/' 
+2025-11-13 00:42:24.729  o.e.t.TamaApiApplication - Started TamaApiApplication in 12.909 seconds (process running for 4683.773) 
+2025-11-13 00:42:24.730  o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged 
+2025-11-13 00:48:49.321  o.s.b.w.e.t.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete 
+2025-11-13 00:48:49.461  o.s.b.w.e.t.GracefulShutdown - Graceful shutdown complete 
+2025-11-13 00:48:49.464  o.s.b.f.s.DisposableBeanAdapter - Custom destroy method 'close' on bean with name 'orderIdReader' propagated an exception: org.springframework.batch.item.ItemStreamException: Error while closing item reader 
+2025-11-13 00:48:49.465  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default' 
+2025-11-13 00:48:49.465  c.z.h.HikariDataSource - HikariPool-2 - Shutdown initiated... 
+2025-11-13 00:48:49.474  c.z.h.HikariDataSource - HikariPool-2 - Shutdown completed. 
+2025-11-13 00:48:52.112  o.h.v.i.u.Version - HV000001: Hibernate Validator 8.0.2.Final 
+2025-11-13 00:48:52.160  o.e.t.TamaApiApplication - Starting TamaApiApplication using Java 17 with PID 668 (C:\Users\user2208\Desktop\sub_port_folio\tama-api-replication\build\classes\java\main started by user2208 in C:\Users\user2208\Desktop\sub_port_folio\tama-api-replication) 
+2025-11-13 00:48:52.161  o.e.t.TamaApiApplication - The following 1 profile is active: "local" 
+2025-11-13 00:48:52.216  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable 
+2025-11-13 00:48:52.216  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG' 
+2025-11-13 00:48:52.917  o.s.b.c.c.a.BatchRegistrar - Finished Spring Batch infrastructure beans configuration in 2 ms. 
+2025-11-13 00:48:53.169  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode. 
+2025-11-13 00:48:53.291  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 116 ms. Found 28 JPA repository interfaces. 
+2025-11-13 00:48:54.044  o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port 5000 (http) 
+2025-11-13 00:48:54.056  o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-5000"] 
+2025-11-13 00:48:54.057  o.a.c.c.StandardService - Starting service [Tomcat] 
+2025-11-13 00:48:54.057  o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34] 
+2025-11-13 00:48:54.123  o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext 
+2025-11-13 00:48:54.123  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1907 ms 
+2025-11-13 00:48:54.286  o.e.t.c.c.d.RoutingDataSource - Selected DB: master 
+2025-11-13 00:48:54.287  c.z.h.HikariDataSource - HikariPool-1 - Starting... 
+2025-11-13 00:48:54.519  c.z.h.p.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@53e06a3a 
+2025-11-13 00:48:54.521  c.z.h.HikariDataSource - HikariPool-1 - Start completed. 
+2025-11-13 00:48:54.532  o.e.t.c.c.d.RoutingDataSource - Selected DB: master 
+2025-11-13 00:48:54.605  o.h.j.i.u.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default] 
+2025-11-13 00:48:54.658  o.h.Version - HHH000412: Hibernate ORM core version 6.2.0.CR2 
+2025-11-13 00:48:54.661  o.h.c.Environment - HHH000406: Using bytecode reflection optimizer 
+2025-11-13 00:48:54.796  o.h.b.i.BytecodeProviderInitiator - HHH000021: Bytecode provider name : bytebuddy 
+2025-11-13 00:48:54.923  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer 
+2025-11-13 00:48:54.938  o.e.t.c.c.d.RoutingDataSource - Selected DB: master 
+2025-11-13 00:48:54.975  SQL dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect 
+2025-11-13 00:48:55.224  o.h.b.i.BytecodeProviderInitiator - HHH000021: Bytecode provider name : bytebuddy 
+2025-11-13 00:48:55.909  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform] 
+2025-11-13 00:48:55.911  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default' 
+2025-11-13 00:48:56.261  o.s.d.j.r.q.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used. 
+2025-11-13 00:48:57.832  o.e.t.c.c.d.RoutingDataSource - Selected DB: master 
+2025-11-13 00:48:57.893  p6spy - #1762962537893 | took 52ms | statement | connection 7| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:48:57.893  p6spy - #1762962537893 | took 52ms | statement | connection 6| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:48:57.921  p6spy - #1762962537921 | took 1ms | statement | connection 7| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?,?,?,?,?,?,?,?,?,?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(1,2,3,4,5,6,7,8,9,10) and c1_0.sequence=1; 
+2025-11-13 00:48:57.922  p6spy - #1762962537922 | took 1ms | statement | connection 6| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?,?,?,?,?,?,?,?,?,?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(1,2,3,4,5,6,7,8,9,10) and c1_0.sequence=1; 
+2025-11-13 00:48:58.001  p6spy - #1762962538001 | took 19ms | statement | connection 7| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(?,?,?,?,?,?,?,?,?,?) group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(1,2,3,4,5,6,7,8,9,10) group by c1_0.color_item_id; 
+2025-11-13 00:48:58.001  p6spy - #1762962538001 | took 20ms | statement | connection 6| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(?,?,?,?,?,?,?,?,?,?) group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(1,2,3,4,5,6,7,8,9,10) group by c1_0.color_item_id; 
+2025-11-13 00:48:58.012  p6spy - #1762962538012 | took 1ms | statement | connection 7| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=1; 
+2025-11-13 00:48:58.012  p6spy - #1762962538012 | took 1ms | statement | connection 6| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=1; 
+2025-11-13 00:48:58.060  p6spy - #1762962538060 | took 31ms | statement | connection 7| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(1,2,3,4) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:48:58.060  p6spy - #1762962538060 | took 31ms | statement | connection 6| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(1,2,3,4) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:48:58.064  p6spy - #1762962538064 | took 1ms | statement | connection 7| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(NULL) and c1_0.sequence=1; 
+2025-11-13 00:48:58.064  p6spy - #1762962538064 | took 1ms | statement | connection 6| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(NULL) and c1_0.sequence=1; 
+2025-11-13 00:48:58.066  p6spy - #1762962538066 | took 1ms | statement | connection 7| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id; 
+2025-11-13 00:48:58.066  p6spy - #1762962538066 | took 1ms | statement | connection 6| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id; 
+2025-11-13 00:48:58.068  p6spy - #1762962538068 | took 1ms | statement | connection 7| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=5; 
+2025-11-13 00:48:58.068  p6spy - #1762962538068 | took 1ms | statement | connection 6| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=5; 
+2025-11-13 00:48:58.103  p6spy - #1762962538103 | took 31ms | statement | connection 7| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(5,6,7,8,9,10) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:48:58.104  p6spy - #1762962538104 | took 31ms | statement | connection 6| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(5,6,7,8,9,10) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:48:58.106  p6spy - #1762962538106 | took 1ms | statement | connection 7| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(NULL) and c1_0.sequence=1; 
+2025-11-13 00:48:58.106  p6spy - #1762962538106 | took 1ms | statement | connection 6| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(NULL) and c1_0.sequence=1; 
+2025-11-13 00:48:58.109  p6spy - #1762962538109 | took 0ms | statement | connection 7| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id; 
+2025-11-13 00:48:58.109  p6spy - #1762962538109 | took 1ms | statement | connection 6| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where 1=0 group by c1_0.color_item_id; 
+2025-11-13 00:48:58.111  p6spy - #1762962538111 | took 1ms | statement | connection 7| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=11; 
+2025-11-13 00:48:58.111  p6spy - #1762962538111 | took 1ms | statement | connection 6| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=?
+select c1_0.category_id,c2_0.parent_id,c2_0.category_id,c2_0.name,c1_0.name,c1_0.parent_id from category c1_0 left join category c2_0 on c1_0.category_id=c2_0.parent_id where c1_0.category_id=11; 
+2025-11-13 00:48:58.164  p6spy - #1762962538164 | took 50ms | statement | connection 7| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(11,12,13,14,15) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:48:58.164  p6spy - #1762962538164 | took 50ms | statement | connection 6| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(?,?,?,?,?) group by c1_0.color_item_id order by sum(o1_0.count) desc limit ?,?
+select c2_0.item_id,c1_0.color_item_id,i1_0.name,i1_0.original_price,i1_0.now_price from order_item o1_0 join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id join color_item c2_0 on c2_0.color_item_id=c1_0.color_item_id join item i1_0 on i1_0.item_id=c2_0.item_id where i1_0.category_id in(11,12,13,14,15) group by c1_0.color_item_id order by sum(o1_0.count) desc limit 0,10; 
+2025-11-13 00:48:58.168  p6spy - #1762962538168 | took 1ms | statement | connection 7| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?,?,?,?,?,?,?,?,?,?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(1,2,3,4,5,6,7,8,9,10) and c1_0.sequence=1; 
+2025-11-13 00:48:58.168  p6spy - #1762962538168 | took 1ms | statement | connection 6| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(?,?,?,?,?,?,?,?,?,?) and c1_0.sequence=?
+select c1_0.item_image_id,c1_0.color_item_id,c1_0.sequence,c1_0.original_file_name,c1_0.stored_file_name from color_item_image c1_0 where c1_0.color_item_id in(1,2,3,4,5,6,7,8,9,10) and c1_0.sequence=1; 
+2025-11-13 00:48:58.189  p6spy - #1762962538189 | took 19ms | statement | connection 7| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(?,?,?,?,?,?,?,?,?,?) group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(1,2,3,4,5,6,7,8,9,10) group by c1_0.color_item_id; 
+2025-11-13 00:48:58.189  p6spy - #1762962538189 | took 19ms | statement | connection 6| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(?,?,?,?,?,?,?,?,?,?) group by c1_0.color_item_id
+select c1_0.color_item_id,cast(round(avg(r1_0.rating),1) as decimal(53,2)),count(c1_0.color_item_id) from review r1_0 join order_item o1_0 on o1_0.order_item_id=r1_0.order_item_id join color_item_size_stock c1_0 on c1_0.color_item_size_stock_id=o1_0.color_item_size_stock_id where o1_0.color_item_size_stock_id in(1,2,3,4,5,6,7,8,9,10) group by c1_0.color_item_id; 
+2025-11-13 00:48:58.192  p6spy - #1762962538192 | took 0ms | commit | connection 7| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:48:58.192  p6spy - #1762962538192 | took 0ms | commit | connection 6| url jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+; 
+2025-11-13 00:48:58.199  o.e.t.c.c.d.RoutingDataSource - Selected DB: master 
+2025-11-13 00:48:58.199  o.s.b.c.r.s.JobRepositoryFactoryBean - No database type set, using meta data indicating: MYSQL 
+2025-11-13 00:48:58.227  o.s.b.c.l.s.TaskExecutorJobLauncher - No TaskExecutor has been set, defaulting to synchronous executor. 
+2025-11-13 00:48:58.278  o.s.b.c.c.a.BatchObservabilityBeanPostProcessor - No Micrometer observation registry found, defaulting to ObservationRegistry.NOOP 
+2025-11-13 00:48:58.286  o.s.b.c.c.a.BatchObservabilityBeanPostProcessor - No Micrometer observation registry found, defaulting to ObservationRegistry.NOOP 
+2025-11-13 00:48:59.096  o.e.t.c.c.d.RoutingDataSource - Selected DB: master 
+2025-11-13 00:48:59.097  o.e.t.c.c.d.RoutingDataSource - Selected DB: master 
+2025-11-13 00:48:59.097  o.s.b.a.h.H2ConsoleAutoConfiguration - H2 console available at '/h2-console'. Databases available at 'jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8', 'jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8', 'jdbc:mysql://localhost:3307/tamaApi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8' 
+2025-11-13 00:48:59.216  o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729 
+2025-11-13 00:48:59.237  o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-5000"] 
+2025-11-13 00:48:59.254  o.s.b.w.e.t.TomcatWebServer - Tomcat started on port 5000 (http) with context path '/' 
+2025-11-13 00:48:59.263  o.e.t.TamaApiApplication - Started TamaApiApplication in 7.543 seconds (process running for 8.151) 
+2025-11-13 00:54:28.938  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 7 class path changes (0 additions, 0 deletions, 7 modifications) 
+2025-11-13 00:54:28.941  o.s.b.w.e.t.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete 
+2025-11-13 00:54:28.942  o.a.c.h.Http11NioProtocol - Pausing ProtocolHandler ["http-nio-5000"] 
+2025-11-13 00:54:29.058  o.s.b.w.e.t.GracefulShutdown - Graceful shutdown complete 
+2025-11-13 00:54:29.059  o.a.c.h.Http11NioProtocol - Stopping ProtocolHandler ["http-nio-5000"] 
+2025-11-13 00:54:29.062  o.s.b.f.s.DisposableBeanAdapter - Custom destroy method 'close' on bean with name 'orderIdReader' propagated an exception: org.springframework.batch.item.ItemStreamException: Error while closing item reader 
+2025-11-13 00:54:29.065  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default' 
+2025-11-13 00:54:29.066  c.z.h.HikariDataSource - HikariPool-1 - Shutdown initiated... 
+2025-11-13 00:54:29.076  c.z.h.HikariDataSource - HikariPool-1 - Shutdown completed. 
