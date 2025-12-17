@@ -30,6 +30,7 @@ logback-spring.xml
 memo.txt
 src/main/generated
 README.md
+logs
 
 ### NetBeans ###
 /nbproject/private/
