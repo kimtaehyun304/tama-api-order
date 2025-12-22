@@ -45,7 +45,7 @@ public class TokenProvider {
 
         try {
             Long memberId = Long.valueOf(claims.getSubject());
-            CustomPrincipal customPrincipal = new CustomPrincipal(TOKEN_PREFIX + " " + token, memberId, null);
+            CustomPrincipal customPrincipal = new CustomPrincipal(TOKEN_PREFIX + " " + token, memberId);
             return new UsernamePasswordAuthenticationToken(customPrincipal, token);
         } catch (Exception e){
             throw new OrderFailException("memberId 누락");

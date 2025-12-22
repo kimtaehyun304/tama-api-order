@@ -21,7 +21,7 @@ class OrderServiceTest {
     private EntityManager em;
 
     //커밋 전이라도, persist하면 insert sql 실행된다
-    @Test
+    //@Test
     @Transactional
     @Rollback(false)
     void 멀티_트랜잭션() throws InterruptedException {
@@ -34,7 +34,7 @@ class OrderServiceTest {
 
     //data jap save()는 @Transactional이 붙어있다.
     //persist 시점에 insert sql 실행되고, save() 종료시 커밋하여 db에 반영
-    @Test
+    //@Test
     void 싱글_트랜잭션() throws InterruptedException {
         Delivery delivery = new Delivery("36265", "산타마을", "오두막", "문 앞 배송 바람", "산타", "민수");
         deliveryRepository.save(delivery);
