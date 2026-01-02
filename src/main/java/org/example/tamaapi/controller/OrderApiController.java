@@ -41,7 +41,7 @@ public class OrderApiController {
     private final EmailService emailService;
     private final PortOneService portOneService;
     private final ItemFeignClient itemFeignClient;
-    private final OrderEventProducer orderEventProducer;
+    //private final OrderEventProducer orderEventProducer;
 
     //멤버 주문 저장
     @PostMapping("/api/orders/member")
@@ -54,7 +54,7 @@ public class OrderApiController {
 
         portOneService.validatePaymentStatus(paymentStatus);
         orderService.validateMemberOrder(portOneOrder, clientTotal, memberId);
-        Long orderId = orderService.saveMemberOrder(
+        orderService.saveMemberOrder(
                 portOneOrder.getPaymentId(),
                 memberId,
                 portOneOrder.getReceiverNickname(),
@@ -67,9 +67,6 @@ public class OrderApiController {
                 portOneOrder.getUsedPoint(),
                 portOneOrder.getOrderItems(),
                 principal.getBearerJwt());
-
-        //공통 DB 동기화
-        orderEventProducer.produceAsyncOrderCreatedEvent(orderId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new SimpleResponse("결제 완료"));
     }
@@ -87,7 +84,7 @@ public class OrderApiController {
         int orderItemsPrice = itemFeignClient.getTotalPrice(requests);
         orderService.validateMemberFreeOrderPrice(orderItemsPrice, req.getMemberCouponId(), req.getUsedPoint(), memberId);
 
-        Long orderId = orderService.saveMemberFreeOrder(
+        orderService.saveMemberFreeOrder(
                 memberId,
                 req.getReceiverNickname(),
                 req.getReceiverPhone(),
@@ -100,9 +97,6 @@ public class OrderApiController {
                 req.getOrderItems(),
                 principal.getBearerJwt()
         );
-
-        //공통 DB 동기화
-        orderEventProducer.produceAsyncOrderCreatedEvent(orderId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new SimpleResponse("결제 완료"));
     }
@@ -131,9 +125,6 @@ public class OrderApiController {
                 portOneOrder.getDeliveryMessage(),
                 portOneOrder.getOrderItems()
         );
-
-        //공통 DB 동기화
-        orderEventProducer.produceAsyncOrderCreatedEvent(orderId);
 
         emailService.sendGuestOrderEmailAsync(portOneOrder.getSenderEmail(), portOneOrder.getSenderNickname(), orderId);
         return ResponseEntity.status(HttpStatus.CREATED).body(new SimpleResponse("결제 완료"));

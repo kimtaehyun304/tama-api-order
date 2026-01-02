@@ -1,8 +1,12 @@
 package org.example.tamaapi.common.exception;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tamaapi.dto.responseDto.SimpleResponse;
 
+import org.springframework.cloud.client.circuitbreaker.NoFallbackAvailableException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +24,11 @@ import java.sql.SQLIntegrityConstraintViolationException;
 
 @RestControllerAdvice
 @Slf4j
+@RequiredArgsConstructor
 //필터에서 발생한 예외는 못잡음
 public class CommonExceptionHandler {
+
+    private final ObjectMapper objectMapper;
 
     //런타임 에러 포함한 기타 예외
     @ExceptionHandler(Exception.class)
@@ -117,5 +124,23 @@ public class CommonExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new SimpleResponse(exception.getMessage()));
     }
 
+    /* 폴백 코드가 복잡해서 안 쓰는게 낫다고 생각
+    @ExceptionHandler(CallNotPermittedException.class)
+    public ResponseEntity<SimpleResponse> CallNotPermittedException(CallNotPermittedException exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new SimpleResponse("트래픽 과부하 상태입니다. 잠시 후에 이용해주세요"));
+    }
+    */
+
+    @ExceptionHandler(NoFallbackAvailableException.class)
+    public ResponseEntity<SimpleResponse> NoFallbackAvailableException(NoFallbackAvailableException exception) {
+        Throwable cause = exception.getCause();
+        if (cause instanceof io.github.resilience4j.circuitbreaker.CallNotPermittedException)
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new SimpleResponse("트래픽 과부하 상태입니다. 잠시 후에 이용해주세요"));
+
+
+        String causeMessage = exception.getCause().getMessage();
+        SimpleResponse simpleResponse = objectMapper.convertValue(causeMessage, SimpleResponse.class);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new SimpleResponse(simpleResponse.getMessage()));
+    }
 
 }

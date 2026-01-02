@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tamaapi.command.order.OrderService;
+import org.example.tamaapi.domain.order.OrderStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -11,13 +12,17 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
+import org.springframework.batch.item.database.orm.JpaNativeQueryProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +41,7 @@ public class AutoOrderCompleteJobConfig {
     @Bean
     public JpaPagingItemReader<Long> orderIdReader()  {
         //업데이트가 실시간으로 이뤄지므로, 페이징이 앞으로 당겨지는 문제 해결을 위해
-        JpaPagingItemReader<Long> reader = new JpaPagingItemReader<Long>() {
+        JpaPagingItemReader<Long> reader = new JpaPagingItemReader<>() {
             @Override
             public int getPage() {
                 return 0;
@@ -45,14 +50,17 @@ public class AutoOrderCompleteJobConfig {
 
         reader.setName("orderIdReader");
         reader.setEntityManagerFactory(emf);
-        reader.setQueryString(
-                "SELECT o.id FROM Order o where date(o.updatedAt) <= :standardDate"
-        );
-        reader.setParameterValues(Map.of(
-                "standardDate", LocalDateTime.now().minusDays(7).toLocalDate()
-        ));
         reader.setPageSize(chunkSize);
 
+        JpaNativeQueryProvider<Long> queryProvider =
+                new JpaNativeQueryProvider<>();
+        queryProvider.setSqlQuery("SELECT o.order_id FROM orders o WHERE o.updated_at >= now() - interval 80 day and o.status = :DELIVERED");
+        queryProvider.setEntityClass(Long.class);
+
+        reader.setParameterValues(Map.of(
+                "DELIVERED", OrderStatus.DELIVERED.name()
+        ));
+        reader.setQueryProvider(queryProvider);
         return reader;
     }
 
@@ -76,7 +84,7 @@ public class AutoOrderCompleteJobConfig {
                 .writer(orderUpdateWriter)
                 .transactionAttribute(
                         new DefaultTransactionAttribute(TransactionDefinition.PROPAGATION_REQUIRED) {{
-                            setReadOnly(true);
+                            setReadOnly(false);
                         }}
                 )
                 .faultTolerant()

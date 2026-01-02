@@ -52,10 +52,12 @@ public class AppConfig {
     public JPAQueryFactory jpaQueryFactory(EntityManager em){
         return new JPAQueryFactory(em);
     }
-
+    /*
     @Bean
     public RequestInterceptor requestLoggingInterceptor() {
         return template -> log.info("[Feign Request] method={}, url={}, query={}, header={} , body={}",
                 template.method(), template.url(), template.queryLine(), template.headers(), (template.body() != null) ? new String(template.body()) : "null");
     }
+     */
+
 }

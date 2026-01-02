@@ -13,6 +13,7 @@ import org.example.tamaapi.dto.requestDto.order.PortOneOrderItem;
 import org.example.tamaapi.common.exception.UsedPaymentIdException;
 import org.example.tamaapi.common.exception.OrderFailException;
 import org.example.tamaapi.common.exception.WillCancelPaymentException;
+import org.example.tamaapi.event.ItemEventProducer;
 import org.example.tamaapi.event.OrderEventProducer;
 import org.example.tamaapi.feignClient.item.ItemFeignClient;
 import org.example.tamaapi.feignClient.item.ItemOrderCountRequest;
@@ -45,12 +46,14 @@ public class OrderService {
     private final OrderQueryRepository orderQueryRepository;
     private final OrderRepository orderRepository;
 
-    private final MemberFeignClient memberFeignClient;
-    private final ItemFeignClient itemFeignClient;
-
     private final JdbcTemplate jdbcTemplate;
     private final EntityManager em;
     private final PortOneService portOneService;
+
+    private final MemberFeignClient memberFeignClient;
+    private final ItemFeignClient itemFeignClient;
+    private final OrderEventProducer orderEventProducer;
+    private final ItemEventProducer itemEventProducer;
 
     @Value("${portOne.secret}")
     private String PORT_ONE_SECRET;
@@ -89,23 +92,16 @@ public class OrderService {
                 memberFeignClient.useCouponAndPoint(usedCouponAndPointRequest, bearerJwt);
             }
 
+            //공통 DB 동기화
+            orderEventProducer.produceOrderCreatedEvent(orderId);
+
             return orderId;
-        } catch (ItemFeignCommandException e) {
-            //주문 롤백 (예외 던지면)
-            portOneService.cancelPayment(paymentId, e.getMessage());
-            throw new WillCancelPaymentException(e.getMessage());
         } catch (MemberFeignCommandException e) {
-            //재고 롤백
-            try {
-                itemFeignClient.increaseStocks(requests);
-            } catch (ItemFeignCommandException failedRollback) {
-                //정합성은 수작업으로 맞춰야 함
-                log.error("[재고 롤백 실패] requests = {}", requests);
-                portOneService.cancelPayment(paymentId, e.getMessage());
-                throw new WillCancelPaymentException(e.getMessage());
-            }
+            //재고 롤백 (API 호출은 실패히면 정합성 안맞아서 이벤트 사용)
+            itemEventProducer.produceIncreaseStockEvent(requests);
+
             //쿠폰은 롤백 안 해도됨 (호출 실패했기 때문)
-            //주문 롤백 (예외 던지면)
+            //주문은 자동 롤백
             portOneService.cancelPayment(paymentId, e.getMessage());
             throw new WillCancelPaymentException(e.getMessage());
         } catch (Exception e) {
@@ -148,26 +144,17 @@ public class OrderService {
                 memberFeignClient.useCouponAndPoint(usedCouponAndPointRequest, bearerJwt);
             }
 
+            orderEventProducer.produceOrderCreatedEvent(orderId);
             //포인트 적립 X (무료 주문이라)
             return orderId;
-        } catch (ItemFeignCommandException e) {
-            //주문 롤백 (예외 던지면)
-            throw new OrderFailException(e.getMessage());
-        } catch (MemberFeignCommandException e) {
-            //재고 롤백
-            try {
-                itemFeignClient.increaseStocks(requests);
-            } catch (ItemFeignCommandException failedRollback) {
-                //정합성은 수작업으로 맞춰야 함
-                log.error("[재고 롤백 실패] requests = {}", requests);
-                throw new OrderFailException(e.getMessage());
-            }
+        }  catch (MemberFeignCommandException e) {
+            //재고 롤백 (API 호출은 실패히면 정합성 안맞아서 이벤트 사용)
+            itemEventProducer.produceIncreaseStockEvent(requests);
             //쿠폰은 롤백 안 해도됨 (호출 실패했기 때문)
-            //주문 롤백 (예외 던지면)
+            //주문은 자동 롤백
             throw new OrderFailException(e.getMessage());
         } catch (Exception e) {
-            //이벤트 발행 실패 or 기타 (두 케이스를 분리해야 할거 같은데)
-            throw new OrderFailException(e.getMessage());
+            throw new OrderFailException(e.getCause().getMessage());
         }
     }
 
@@ -193,15 +180,11 @@ public class OrderService {
 
             //재고 감소
             itemFeignClient.decreaseStocks(requests);
-
+            //공통 DB 동기화
+            orderEventProducer.produceOrderCreatedEvent(orderId);
             //비회원은 쿠폰, 포인트를 쓸 수 없어서 생략
             return orderId;
-        } catch (ItemFeignCommandException e) {
-            //주문 롤백 (예외 던지면)
-            portOneService.cancelPayment(paymentId, e.getMessage());
-            throw new WillCancelPaymentException(e.getMessage());
-        } catch (Exception e) {
-            //이벤트 발행 실패 or 기타 (두 케이스를 분리해야 할거 같은데)
+        }  catch (Exception e) {
             portOneService.cancelPayment(paymentId, e.getMessage());
             throw new WillCancelPaymentException(e.getMessage());
         }
@@ -399,9 +382,11 @@ public class OrderService {
         //validatePoint(usedPoint, memberId, orderPriceUsedCoupon, SHIPPING_FEE);
 
         int serverTotal = SHIPPING_FEE + orderPriceUsedCoupon - usedPoint;
-
+        /*
         if (serverTotal != 0)
             throw new OrderFailException("결제해야 할 금액이 0원이 아닙니다.");
+
+         */
     }
 
     //현재 서비스 정책상 비회원은 쿠폰,포인트를 못 씀
@@ -440,7 +425,7 @@ public class OrderService {
             throw new OrderFailException("memberId가 누락됐습니다");
     }
 
-    //------------------------------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------
     public void updateOrderStatusToCompleted(List<Long> orderIds) {
         int count = em.createQuery("update Order o set o.status = :completed, o.updatedAt = now() where o.id in :orderIds")
                 .setParameter("completed", OrderStatus.COMPLETED)
