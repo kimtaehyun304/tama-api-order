@@ -22,4 +22,7 @@ public class ErrorMessageUtil {
 
    public static String ACCESS_DENIED = "접근 권한이 없습니다";
 
+   public static String WILL_CANCEL_PAYMENT = "결제가 취소될 예정입니다";
+
+
 }

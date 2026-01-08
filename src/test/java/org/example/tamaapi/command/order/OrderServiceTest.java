@@ -56,7 +56,7 @@ class OrderServiceTest {
                 .getResultList();
         System.out.println("resultList.size() = " + resultList.size());
     }
-
+    /*
     //@Test
     void LocalDateTime_변환_테스트_네이티브2() {
         String eightDaysAgo = Timestamp.valueOf(LocalDateTime.now().minusDays(80).toLocalDate().atStartOfDay()).toString();
@@ -66,7 +66,7 @@ class OrderServiceTest {
                 .getResultList();
         System.out.println("list.size() = " + list.size());
     }
-
+    */
     //@Test
     @Transactional
     @Rollback(false)

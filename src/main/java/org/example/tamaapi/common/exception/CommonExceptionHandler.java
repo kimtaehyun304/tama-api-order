@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.concurrent.TimeoutException;
 
 
 @RestControllerAdvice
@@ -29,6 +30,11 @@ import java.sql.SQLIntegrityConstraintViolationException;
 public class CommonExceptionHandler {
 
     private final ObjectMapper objectMapper;
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Throwable> void throwOriginalException(Throwable t) throws T {
+        throw (T) t;
+    }
 
     //런타임 에러 포함한 기타 예외
     @ExceptionHandler(Exception.class)
@@ -124,23 +130,31 @@ public class CommonExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new SimpleResponse(exception.getMessage()));
     }
 
-    /* 폴백 코드가 복잡해서 안 쓰는게 낫다고 생각
+    //Resilience4j는 TimeoutException을 IllegalStateException로 래핑함
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<SimpleResponse> IllegalStateException(IllegalStateException exception) {
+        if (exception.getCause() instanceof TimeoutException)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new SimpleResponse("요청 시간을 초과했습니다. 다시 이용해주세요"));
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new SimpleResponse(exception.getMessage()));
+    }
+
     @ExceptionHandler(CallNotPermittedException.class)
-    public ResponseEntity<SimpleResponse> CallNotPermittedException(CallNotPermittedException exception) {
+    public ResponseEntity<SimpleResponse> CallNotPermittedException() {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new SimpleResponse("트래픽 과부하 상태입니다. 잠시 후에 이용해주세요"));
     }
-    */
 
+    /*
     @ExceptionHandler(NoFallbackAvailableException.class)
     public ResponseEntity<SimpleResponse> NoFallbackAvailableException(NoFallbackAvailableException exception) {
         Throwable cause = exception.getCause();
         if (cause instanceof io.github.resilience4j.circuitbreaker.CallNotPermittedException)
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new SimpleResponse("트래픽 과부하 상태입니다. 잠시 후에 이용해주세요"));
 
-
         String causeMessage = exception.getCause().getMessage();
         SimpleResponse simpleResponse = objectMapper.convertValue(causeMessage, SimpleResponse.class);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new SimpleResponse(simpleResponse.getMessage()));
     }
+    */
 
 }

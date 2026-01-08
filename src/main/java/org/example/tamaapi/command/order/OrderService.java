@@ -23,6 +23,7 @@ import org.example.tamaapi.feignClient.member.MemberFeignClient;
 import org.example.tamaapi.query.order.OrderQueryRepository;
 import org.example.tamaapi.command.PortOneService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.circuitbreaker.NoFallbackAvailableException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,6 +35,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.example.tamaapi.common.exception.CommonExceptionHandler.throwOriginalException;
 import static org.example.tamaapi.common.filter.TokenAuthenticationFilter.TOKEN_PREFIX;
 import static org.example.tamaapi.common.util.ErrorMessageUtil.*;
 
@@ -84,7 +86,7 @@ public class OrderService {
 
             //재고 감소
             itemFeignClient.decreaseStocks(requests);
-
+            
             //쿠폰 감소
             if (memberCouponId != null || usedPoint != 0) {
                 int rewardPoint = (int) ((orderItemsPrice - usedCouponPrice - usedPoint) * REWARD_POINT_RATE);
@@ -102,12 +104,13 @@ public class OrderService {
 
             //쿠폰은 롤백 안 해도됨 (호출 실패했기 때문)
             //주문은 자동 롤백
+            //결제가 취소될 예정입니다, 메시지 넣고 싶은데 어렵다
             portOneService.cancelPayment(paymentId, e.getMessage());
-            throw new WillCancelPaymentException(e.getMessage());
+            throw e;
         } catch (Exception e) {
-            //이벤트 발행 실패 or 기타 (두 케이스를 분리해야 할거 같은데)
+            //재고 부족 예외 포함
             portOneService.cancelPayment(paymentId, e.getMessage());
-            throw new WillCancelPaymentException(e.getMessage());
+            throw e;
         }
     }
 
@@ -152,9 +155,7 @@ public class OrderService {
             itemEventProducer.produceIncreaseStockEvent(requests);
             //쿠폰은 롤백 안 해도됨 (호출 실패했기 때문)
             //주문은 자동 롤백
-            throw new OrderFailException(e.getMessage());
-        } catch (Exception e) {
-            throw new OrderFailException(e.getCause().getMessage());
+            throw e;
         }
     }
 
@@ -186,7 +187,8 @@ public class OrderService {
             return orderId;
         }  catch (Exception e) {
             portOneService.cancelPayment(paymentId, e.getMessage());
-            throw new WillCancelPaymentException(e.getMessage());
+            //결제가 취소될 예정입니다, 메시지 넣고 싶은데 어렵다
+            throw e;
         }
     }
 
@@ -334,20 +336,13 @@ public class OrderService {
             validateMemberId(memberId);
             validatePaymentId(order.getPaymentId());
             List<ItemOrderCountRequest> requests = order.getOrderItems().stream().map(ItemOrderCountRequest::new).toList();
-            //int orderItemsPrice = itemFeignClient.getTotalPrice(new ItemOrderCountRequestWrapper(requests));
             int orderItemsPrice = itemFeignClient.getTotalPrice(requests);
             validateMemberOrderPrice(orderItemsPrice, order.getMemberCouponId(), order.getUsedPoint(), clientTotal, memberId);
-        } catch (UsedPaymentIdException e) {
-            throw new IllegalArgumentException(e.getMessage());
-        } catch (OrderFailException e) {
-            log.warn(e.getMessage());
-            portOneService.cancelPayment(order.getPaymentId(), e.getMessage());
-            throw new WillCancelPaymentException(e.getMessage());
         } catch (Exception e) {
             log.error(e.getMessage());
             //주문 취소안하고, DB 장애 해결되면, 관리자 페이지에서 로그 조회하여 주문 재등록하게 하는 방법도 있음
             portOneService.cancelPayment(order.getPaymentId(), e.getMessage());
-            throw new WillCancelPaymentException(e.getMessage());
+            throw e;
         }
     }
 
@@ -363,7 +358,7 @@ public class OrderService {
 
         int serverTotal = orderPriceUsedCoupon - usedPoint + SHIPPING_FEE;
         if (clientTotal != serverTotal)
-            throw new OrderFailException("결제 금액이 위변조 됐습니다.");
+            throw new IllegalArgumentException("결제 금액이 위변조 됐습니다.");
     }
 
     //무료 주문은 PG사 결제를 안 거쳤으므로, 결제 취소 없음
@@ -377,16 +372,15 @@ public class OrderService {
         int orderPriceUsedCoupon = orderItemsPrice - couponPrice;
 
         if (usedPoint > orderPriceUsedCoupon + SHIPPING_FEE)
-            throw new OrderFailException("주문 가격보다 많은 포인트를 사용할 수 없습니다");
+            throw new IllegalArgumentException("주문 가격보다 많은 포인트를 사용할 수 없습니다");
         //이벤트에서 처리
         //validatePoint(usedPoint, memberId, orderPriceUsedCoupon, SHIPPING_FEE);
 
         int serverTotal = SHIPPING_FEE + orderPriceUsedCoupon - usedPoint;
-        /*
-        if (serverTotal != 0)
-            throw new OrderFailException("결제해야 할 금액이 0원이 아닙니다.");
 
-         */
+        if (serverTotal != 0)
+            throw new IllegalArgumentException("결제해야 할 금액이 0원이 아닙니다.");
+
     }
 
     //현재 서비스 정책상 비회원은 쿠폰,포인트를 못 씀
@@ -399,16 +393,11 @@ public class OrderService {
             int SHIPPING_FEE = getShippingFee(orderItemsPrice);
             int serverTotal = SHIPPING_FEE + orderItemsPrice;
             if (serverTotal != clientTotal)
-                throw new OrderFailException("결제 금액이 위변조 됐습니다.");
-        } catch (OrderFailException e) {
-            log.warn(e.getMessage());
-            portOneService.cancelPayment(order.getPaymentId(), e.getMessage());
-            throw new WillCancelPaymentException(e.getMessage());
+                throw new IllegalArgumentException("결제할 금액이 위변조 됐습니다.");
         } catch (Exception e) {
             log.error(e.getMessage());
             //주문 취소안하고, DB 장애 해결되면, 관리자 페이지에서 로그 조회하여 주문 재등록하게 하는 방법도 있음
-            portOneService.cancelPayment(order.getPaymentId(), e.getMessage());
-            throw new WillCancelPaymentException(e.getMessage());
+            throw e;
         }
     }
 
@@ -422,7 +411,7 @@ public class OrderService {
 
     private void validateMemberId(Long memberId) {
         if (memberId == null)
-            throw new OrderFailException("memberId가 누락됐습니다");
+            throw new IllegalArgumentException("memberId가 누락됐습니다");
     }
 
     //------------------------------------
