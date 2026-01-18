@@ -39,7 +39,7 @@ public class AutoOrderCompleteJobConfig {
     private static final int chunkSize = 1000;
 
     @Bean
-    public JpaPagingItemReader<Long> orderIdReader()  {
+    public JpaPagingItemReader<Long> orderIdReader() {
         //업데이트가 실시간으로 이뤄지므로, 페이징이 앞으로 당겨지는 문제 해결을 위해
         JpaPagingItemReader<Long> reader = new JpaPagingItemReader<>() {
             @Override
@@ -54,7 +54,7 @@ public class AutoOrderCompleteJobConfig {
 
         JpaNativeQueryProvider<Long> queryProvider =
                 new JpaNativeQueryProvider<>();
-        queryProvider.setSqlQuery("SELECT o.order_id FROM orders o WHERE o.updated_at >= now() - interval 80 day and o.status = :DELIVERED");
+        queryProvider.setSqlQuery("SELECT o.order_id FROM orders o WHERE o.updated_at >= now() - interval 8 day and o.status = :DELIVERED");
         queryProvider.setEntityClass(Long.class);
 
         reader.setParameterValues(Map.of(
@@ -70,7 +70,8 @@ public class AutoOrderCompleteJobConfig {
             if (chunk.isEmpty() || chunk.getItems().isEmpty()) {
                 log.debug("reader 데이터가 비어서 배치를 생략합니다.");
                 return;
-            };
+            }
+            ;
             orderService.updateOrderStatusToCompleted((List<Long>) chunk.getItems());
         };
     }
@@ -81,6 +82,9 @@ public class AutoOrderCompleteJobConfig {
         return new StepBuilder("completeOrderStep", jobRepository)
                 .<Long, Long>chunk(chunkSize, transactionManager)
                 .reader(orderIdReader)
+                .transactionAttribute(new DefaultTransactionAttribute(TransactionDefinition.PROPAGATION_REQUIRED) {{
+                    setReadOnly(true);
+                }})
                 .writer(orderUpdateWriter)
                 .transactionAttribute(
                         new DefaultTransactionAttribute(TransactionDefinition.PROPAGATION_REQUIRED) {{
