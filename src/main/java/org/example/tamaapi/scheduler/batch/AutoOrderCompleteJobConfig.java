@@ -52,9 +52,8 @@ public class AutoOrderCompleteJobConfig {
         reader.setEntityManagerFactory(emf);
         reader.setPageSize(chunkSize);
 
-        JpaNativeQueryProvider<Long> queryProvider =
-                new JpaNativeQueryProvider<>();
-        queryProvider.setSqlQuery("SELECT o.order_id FROM orders o WHERE o.updated_at >= now() - interval 8 day and o.status = :DELIVERED");
+        JpaNativeQueryProvider<Long> queryProvider = new JpaNativeQueryProvider<>();
+        queryProvider.setSqlQuery("SELECT o.order_id FROM orders o WHERE o.updated_at >= now() - interval 8 day and o.status = :DELIVERED order by o.order_id asc");
         queryProvider.setEntityClass(Long.class);
 
         reader.setParameterValues(Map.of(
