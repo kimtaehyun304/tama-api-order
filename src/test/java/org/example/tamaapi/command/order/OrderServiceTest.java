@@ -12,6 +12,9 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,65 +28,85 @@ class OrderServiceTest {
     @Autowired
     private EntityManager em;
 
-    //커밋 전이라도, persist하면 insert sql 실행된다
-    //@Test
-    @Transactional
-    @Rollback(false)
-    void 멀티_트랜잭션() throws InterruptedException {
-        Delivery delivery = new Delivery("36265", "산타마을", "오두막", "문 앞 배송 바람", "산타", "민수");
-        deliveryRepository.save(delivery);
 
-        Thread.sleep(1000 * 30);
-        System.out.println("delivery.getId() = " + delivery.getId());
+    @Test
+    void 아웃박스_폴링_경합_테스트() throws InterruptedException {
+        int threadCount = 1;
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        String url = "http://localhost:" + 5001 + "/api/orders/free/member";
+
+        String body = """
+    {
+      "paymentId": null,
+      "senderNickname": "박유빈",
+      "senderEmail": "'burnaby033@naver.com'",
+      "receiverNickname": "박유빈",
+      "receiverPhone": "'01011111113'",
+      "zipCode": "12345",
+      "streetAddress": "서울특별시 강남구 테헤란로",
+      "detailAddress": "101동 1001호",
+      "deliveryMessage": "문 앞에 놓아주세요",
+      "memberCouponId": null,
+      "usedPoint": 79800,
+      "orderItems": [
+        {"colorItemSizeStockId": 1, "orderCount": 1},
+        {"colorItemSizeStockId": 2, "orderCount": 1}
+      ]
     }
+    """;
 
-    //data jap save()는 @Transactional이 붙어있다.
-    //persist 시점에 insert sql 실행되고, save() 종료시 커밋하여 db에 반영
-    //@Test
-    void 싱글_트랜잭션() throws InterruptedException {
-        Delivery delivery = new Delivery("36265", "산타마을", "오두막", "문 앞 배송 바람", "산타", "민수");
-        deliveryRepository.save(delivery);
+        // RestTemplate는 스레드 안전하므로 한 번만 생성해서 재사용
+        var restTemplate = new org.springframework.web.client.RestTemplate();
 
-        Thread.sleep(1000 * 30);
-        System.out.println("delivery.getId() = " + delivery.getId());
-    }
+        // 실패 결과를 수집할 스레드 안전한 컬렉션
+        java.util.concurrent.ConcurrentLinkedQueue<String> failures = new java.util.concurrent.ConcurrentLinkedQueue<>();
 
+        for (int i = 0; i < threadCount; i++) {
+            executorService.submit(() -> {
+                try {
+                    var headers = new org.springframework.http.HttpHeaders();
+                    headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+                    //2026-03-20 ~ 2027-03-20 유효기간 1년 토큰 (체험용 계정)
+                    headers.setBearerAuth("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJraW1hcGJlbEBnbWFpbC5jb20iLCJpYXQiOjE3NzM5MzM5MzksImV4cCI6MTgwNTQ2OTkzOSwic3ViIjoiMyJ9.QOAz6094LNu2_jy0WMfebbFwgCj0PUpB3hi05oqOnt4");
 
-    //이게 더 간단해서 쓸듯, 어짜피 네이티브 쿼리 써야해서
-    //@Test
-    void LocalDateTime_변환_테스트_네이티브() {
-        List<Long> resultList = em.createNativeQuery("SELECT o.order_id FROM orders o WHERE o.updated_at >= now() - interval 80 day", Long.class)
-                .getResultList();
-        System.out.println("resultList.size() = " + resultList.size());
-    }
-    /*
-    //@Test
-    void LocalDateTime_변환_테스트_네이티브2() {
-        String eightDaysAgo = Timestamp.valueOf(LocalDateTime.now().minusDays(80).toLocalDate().atStartOfDay()).toString();
-        System.out.println("eightDaysAgo = " + eightDaysAgo);
-        List<Long> list = em.createNativeQuery("SELECT o.order_id FROM orders o WHERE o.updated_at >= :eightDaysAgo", Long.class)
-                .setParameter("eightDaysAgo", eightDaysAgo)
-                .getResultList();
-        System.out.println("list.size() = " + list.size());
-    }
-    */
-    //@Test
-    @Transactional
-    @Rollback(false)
-    void LocalDateTime_변환_테스트_실패() {
-        System.out.println(TimeZone.getDefault());
-        //IDE에서 예외는 안발생하지만, 워크벤치에서 해보면 에외 발생
-        LocalDateTime eightDaysAgo = LocalDateTime.now().minusDays(80).toLocalDate().atStartOfDay();
-        //이건 예외 발생
-        //String eightDaysAgo = Timestamp.valueOf(LocalDateTime.now().minusDays(8).toLocalDate().atStartOfDay()).toString();
-        System.out.println("eightDaysAgo = " + eightDaysAgo);
-        List<Long> resultList = em.createQuery("SELECT o.id FROM Order o WHERE o.updatedAt >= :eightDaysAgo", Long.class)
-                .setParameter("eightDaysAgo", eightDaysAgo)
-                .getResultList();
-        for (Long orderId : resultList) {
-            System.out.println("orderId = " + orderId);
+                    var request = new org.springframework.http.HttpEntity<>(body, headers);
+
+                    var resp = restTemplate.postForEntity(url, request, String.class);
+
+                    // 상태 코드로 간단 체크: 2xx가 아니면 실패 수집
+                    if (!resp.getStatusCode().is2xxSuccessful()) {
+                        failures.add("Status: " + resp.getStatusCodeValue());
+                    }
+
+                } catch (Exception e) {
+                    // 예외는 무시하지 말고 수집 또는 로깅
+                    failures.add("Exception: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+                } finally {
+                    latch.countDown();
+                }
+            });
         }
-        System.out.println("resultList.size() = " + resultList.size());
+
+        // 모든 작업 완료 대기
+        latch.await();
+
+        // Executor 정리
+        executorService.shutdown();
+        if (!executorService.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS)) {
+            executorService.shutdownNow();
+        }
+
+        // 실패가 있다면 테스트 실패로 처리
+        if (!failures.isEmpty()) {
+            // 실패 내용을 출력(디버깅용) 후 assert
+            failures.forEach(System.out::println);
+            org.junit.jupiter.api.Assertions.fail("동시 요청 중 일부 실패: count=" + failures.size());
+        }
+
+        // 추가로 응답 바디 검증 등 필요시 assertions 추가
     }
+
 
 }

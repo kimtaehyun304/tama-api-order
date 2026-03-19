@@ -5,50 +5,36 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tamaapi.common.exception.feign.ItemFeignCommandException;
 import org.example.tamaapi.common.exception.feign.MemberFeignCommandException;
+import org.example.tamaapi.common.util.ThreadUtil;
 import org.example.tamaapi.domain.order.*;
 import org.example.tamaapi.dto.PortOneOrder;
-import org.example.tamaapi.dto.feign.ItemOrderCountRequestWrapper;
 import org.example.tamaapi.dto.feign.UsedCouponAndPointRequest;
 import org.example.tamaapi.dto.requestDto.order.PortOneOrderItem;
 import org.example.tamaapi.common.exception.UsedPaymentIdException;
-import org.example.tamaapi.common.exception.OrderFailException;
-import org.example.tamaapi.common.exception.WillCancelPaymentException;
 import org.example.tamaapi.event.ItemEventProducer;
 import org.example.tamaapi.event.OrderEventProducer;
 import org.example.tamaapi.feignClient.item.ItemFeignClient;
 import org.example.tamaapi.feignClient.item.ItemOrderCountRequest;
-import org.example.tamaapi.feignClient.item.ItemPriceResponse;
 import org.example.tamaapi.feignClient.member.Authority;
 import org.example.tamaapi.feignClient.member.MemberFeignClient;
 import org.example.tamaapi.query.order.OrderQueryRepository;
 import org.example.tamaapi.command.PortOneService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.circuitbreaker.NoFallbackAvailableException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static org.example.tamaapi.common.exception.CommonExceptionHandler.throwOriginalException;
-import static org.example.tamaapi.common.filter.TokenAuthenticationFilter.TOKEN_PREFIX;
 import static org.example.tamaapi.common.util.ErrorMessageUtil.*;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class OrderService {
 
     private final OrderQueryRepository orderQueryRepository;
     private final OrderRepository orderRepository;
-
-    private final JdbcTemplate jdbcTemplate;
+    private final OrderTxService orderTxService;
     private final EntityManager em;
     private final PortOneService portOneService;
 
@@ -56,13 +42,10 @@ public class OrderService {
     private final ItemFeignClient itemFeignClient;
     private final OrderEventProducer orderEventProducer;
     private final ItemEventProducer itemEventProducer;
-
-    @Value("${portOne.secret}")
-    private String PORT_ONE_SECRET;
-
+    private final ThreadUtil threadUtil;
     public static Double REWARD_POINT_RATE = 0.005;
 
-    public Long saveMemberOrder(String paymentId, Long memberId,
+    public void saveMemberOrder(String paymentId, Long memberId,
                                 String receiverNickname,
                                 String receiverPhone,
                                 String zipCode,
@@ -80,10 +63,6 @@ public class OrderService {
             int usedCouponPrice = (memberCouponId == null) ? 0 : memberFeignClient.getCouponPrice(memberCouponId, orderItemsPrice);
             int shippingFee = getShippingFee(orderItemsPrice);
 
-            //주문 저장
-            Long orderId = saveOrder(paymentId, memberId, null, receiverNickname, receiverPhone,
-                    zipCode, streetAddress, detailAddress, message, shippingFee, memberCouponId, usedCouponPrice, usedPoint, orderItems);
-
             //재고 감소
             itemFeignClient.decreaseStocks(requests);
             
@@ -94,28 +73,32 @@ public class OrderService {
                 memberFeignClient.useCouponAndPoint(usedCouponAndPointRequest, bearerJwt);
             }
 
-            //공통 DB 동기화
-            orderEventProducer.produceOrderCreatedEvent(orderId);
+            //주문 저장
+            orderTxService.saveOrder(paymentId, memberId, null, receiverNickname, receiverPhone,
+                    zipCode, streetAddress, detailAddress, message, shippingFee, memberCouponId, usedCouponPrice, usedPoint, orderItems);
 
-            return orderId;
-        } catch (MemberFeignCommandException e) {
+            //폴링 부하 방지를 하려면 이렇게
+            //message.published = true;
+            //outbox.save(message);
+
+            //아웃박스 폴링, 이벤트 발행,소비 진행 시간 고려하여 1.5초 쯤 대기해야함
+            //프론트 개발자에게 부탁하기. 브라우저에서 해야 성능 문제가 없음
+
+        } catch (Exception e) {
+            portOneService.cancelPayment(paymentId, e.getMessage());
+            if(e instanceof ItemFeignCommandException) throw e;
+
             //재고 롤백 (API 호출은 실패히면 정합성 안맞아서 이벤트 사용)
             itemEventProducer.produceIncreaseStockEvent(requests);
 
             //쿠폰은 롤백 안 해도됨 (호출 실패했기 때문)
             //주문은 자동 롤백
-            //결제가 취소될 예정입니다, 메시지 넣고 싶은데 어렵다
-            portOneService.cancelPayment(paymentId, e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            //재고 부족 예외 포함
-            portOneService.cancelPayment(paymentId, e.getMessage());
             throw e;
         }
     }
 
     //결제 금액이 없어서 결제 취소할 일이 없어서 메서드 분리
-    public Long saveMemberFreeOrder(Long memberId,
+    public void saveMemberFreeOrder(Long memberId,
                                     String receiverNickname,
                                     String receiverPhone,
                                     String zipCode,
@@ -133,10 +116,6 @@ public class OrderService {
             int usedCouponPrice = (memberCouponId == null) ? 0 : memberFeignClient.getCouponPrice(memberCouponId, orderItemsPrice);
             int shippingFee = getShippingFee(orderItemsPrice);
 
-            //주문 저장
-            Long orderId = saveOrder(null, memberId, null, receiverNickname, receiverPhone,
-                    zipCode, streetAddress, detailAddress, message, shippingFee, memberCouponId, usedCouponPrice, usedPoint, orderItems);
-
             //재고 감소
             itemFeignClient.decreaseStocks(requests);
 
@@ -147,14 +126,14 @@ public class OrderService {
                 memberFeignClient.useCouponAndPoint(usedCouponAndPointRequest, bearerJwt);
             }
 
-            orderEventProducer.produceOrderCreatedEvent(orderId);
+            //주문 저장
+            orderTxService.saveOrder(null, memberId, null, receiverNickname, receiverPhone,
+                    zipCode, streetAddress, detailAddress, message, shippingFee, memberCouponId, usedCouponPrice, usedPoint, orderItems);
+
             //포인트 적립 X (무료 주문이라)
-            return orderId;
-        }  catch (MemberFeignCommandException e) {
-            //재고 롤백 (API 호출은 실패히면 정합성 안맞아서 이벤트 사용)
+        }  catch (Exception e) {
+            if(e instanceof ItemFeignCommandException) throw e;
             itemEventProducer.produceIncreaseStockEvent(requests);
-            //쿠폰은 롤백 안 해도됨 (호출 실패했기 때문)
-            //주문은 자동 롤백
             throw e;
         }
     }
@@ -175,66 +154,20 @@ public class OrderService {
             int orderItemsPrice = itemFeignClient.getTotalPrice(requests);
             int shippingFee = getShippingFee(orderItemsPrice);
 
-            //주문 저장
-            Long orderId = saveOrder(paymentId, null, guest, receiverNickname, receiverPhone,
-                    zipCode, streetAddress, detailAddress, message, shippingFee, null, 0, 0, orderItems);
-
             //재고 감소
             itemFeignClient.decreaseStocks(requests);
-            //공통 DB 동기화
-            orderEventProducer.produceOrderCreatedEvent(orderId);
+            //주문 저장
+            Long orderId = orderTxService.saveOrder(paymentId, null, guest, receiverNickname, receiverPhone,
+                    zipCode, streetAddress, detailAddress, message, shippingFee, null, 0, 0, orderItems);
+
             //비회원은 쿠폰, 포인트를 쓸 수 없어서 생략
             return orderId;
-        }  catch (Exception e) {
+        }   catch (Exception e) {
             portOneService.cancelPayment(paymentId, e.getMessage());
-            //결제가 취소될 예정입니다, 메시지 넣고 싶은데 어렵다
+            if(e instanceof ItemFeignCommandException) throw e;
+            itemEventProducer.produceIncreaseStockEvent(requests);
             throw e;
         }
-    }
-
-    private Long saveOrder(String paymentId,
-                           Long memberId,
-                           Guest guest,
-                           String receiverNickname,
-                           String receiverPhone,
-                           String zipCode,
-                           String streetAddress,
-                           String detailAddress,
-                           String message,
-                           int shippingFee,
-                           Long memberCouponId,
-                           int usedCouponPrice,
-                           int usedPoint,
-                           List<PortOneOrderItem> portOneOrderItems) {
-
-        Delivery delivery = new Delivery(zipCode, streetAddress, detailAddress, message, receiverNickname, receiverPhone);
-        List<OrderItem> orderItems = createOrderItem(portOneOrderItems);
-
-
-        Order order = (memberId != null)
-                    ? Order.createMemberOrder(paymentId, memberId, delivery, memberCouponId, usedCouponPrice, usedPoint, shippingFee, orderItems)
-                : Order.createGuestOrder(paymentId, guest, delivery, shippingFee, orderItems);
-
-        orderRepository.save(order);
-        saveOrderItems(orderItems);
-        return order.getId();
-    }
-
-    public void saveOrderItems(List<OrderItem> orderItems) {
-        jdbcTemplate.batchUpdate("INSERT INTO order_item(order_id, color_item_size_stock_id, order_price, count) values (?, ?, ?, ?)", new BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-                ps.setLong(1, orderItems.get(i).getOrder().getId());
-                ps.setLong(2, orderItems.get(i).getColorItemSizeStockId());
-                ps.setInt(3, orderItems.get(i).getOrderPrice());
-                ps.setInt(4, orderItems.get(i).getCount());
-            }
-
-            @Override
-            public int getBatchSize() {
-                return orderItems.size();
-            }
-        });
     }
 
     public void cancelGuestOrder(Long orderId, String reason) {
@@ -301,31 +234,6 @@ public class OrderService {
         order.cancelOrder();
     }
 
-    //saveOrder 공통 로직
-    //재고 감소는 이벤트 item msa에서
-    private List<OrderItem> createOrderItem(List<PortOneOrderItem> portOneOrderItems) {
-        List<OrderItem> orderItems = new ArrayList<>();
-        List<Long> colorItemSizeStockIds = portOneOrderItems.stream().map(PortOneOrderItem::getColorItemSizeStockId).toList();
-
-        List<ItemPriceResponse> itemsPriceResponses = itemFeignClient.getItemsPrice(colorItemSizeStockIds);
-        Map<Long, Integer> map = itemsPriceResponses.stream()
-                .collect(Collectors.toMap(
-                        ItemPriceResponse::getColorItemSizeStockId,
-                        ItemPriceResponse::getPrice
-                ));
-
-        for (PortOneOrderItem portOneOrderItem : portOneOrderItems) {
-            Long colorItemSizeStockId = portOneOrderItem.getColorItemSizeStockId();
-
-            //가격 변동 or 할인 쿠폰 고려
-            int orderPrice = map.get(colorItemSizeStockId);
-
-            OrderItem orderItem = OrderItem.builder().colorItemSizeStockId(colorItemSizeStockId)
-                    .orderPrice(orderPrice).count(portOneOrderItem.getOrderCount()).build();
-            orderItems.add(orderItem);
-        }
-        return orderItems;
-    }
 
     public int getShippingFee(int orderItemsPrice) {
         return orderItemsPrice > 40000 ? 0 : 3000;

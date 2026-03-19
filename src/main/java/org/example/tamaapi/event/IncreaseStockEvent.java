@@ -13,6 +13,10 @@ import java.util.List;
 @Getter
 public class IncreaseStockEvent {
 
+    private String eventType = "INCREASE_STOCK";
     private List<ItemOrderCountRequest> requests;
 
+    public IncreaseStockEvent(List<ItemOrderCountRequest> requests) {
+        this.requests = requests;
+    }
 }
