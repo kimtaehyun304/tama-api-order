@@ -38,23 +38,25 @@ public class OrderApiController {
 
     private final OrderService orderService;
     private final OrderQueryRepository orderQueryRepository;
-    private final EmailService emailService;
     private final PortOneService portOneService;
+    private final EmailService emailService;
     private final ItemFeignClient itemFeignClient;
-    //private final OrderEventProducer orderEventProducer;
 
-    //멤버 주문 저장
+
     @PostMapping("/api/orders/member")
-    public ResponseEntity<SimpleResponse> saveMemberOrder(@RequestParam String paymentId, @AuthenticationPrincipal CustomPrincipal principal) {
+    public ResponseEntity<SimpleResponse> saveMemberOrder(@RequestParam String paymentId, @AuthenticationPrincipal Long memberId) {
         Map<String, Object> paymentResponse = portOneService.findByPaymentId(paymentId);
         PortOnePaymentStatus paymentStatus = PortOnePaymentStatus.valueOf((String) paymentResponse.get("status"));
         PortOneOrder portOneOrder = portOneService.convertCustomData((String) paymentResponse.get("customData"), paymentId);
         int clientTotal = (int) ((Map<String, Object>) paymentResponse.get("amount")).get("total");
-        Long memberId = principal.getMemberId();
-
+        List<ItemOrderCountRequest> requests = portOneOrder.getOrderItems().stream().map(ItemOrderCountRequest::new).toList();
+        int orderItemsPrice = itemFeignClient.getTotalPrice(requests);
         portOneService.validatePaymentStatus(paymentStatus);
-        orderService.validateMemberOrder(portOneOrder, clientTotal, memberId);
+        orderService.validateGuestOrder(orderItemsPrice, portOneOrder, clientTotal);
+
+        orderService.validateMemberOrder(orderItemsPrice, portOneOrder, clientTotal, memberId);
         orderService.saveMemberOrder(
+                orderItemsPrice,
                 portOneOrder.getPaymentId(),
                 memberId,
                 portOneOrder.getReceiverNickname(),
@@ -65,8 +67,7 @@ public class OrderApiController {
                 portOneOrder.getDeliveryMessage(),
                 portOneOrder.getMemberCouponId(),
                 portOneOrder.getUsedPoint(),
-                portOneOrder.getOrderItems(),
-                principal.getBearerJwt());
+                portOneOrder.getOrderItems());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new SimpleResponse("결제 완료"));
     }
@@ -75,16 +76,12 @@ public class OrderApiController {
     //비회원은 쿠폰, 포인트 없어서 무료 주문 불가 -> 비회원용 API 안 만듬
     //포트원을 거치지 않음 -> 리다이렉트 X -> 모바일용 API 안 만듬
     @PostMapping("/api/orders/free/member")
-    public ResponseEntity<SimpleResponse> saveMemberOrder(@AuthenticationPrincipal CustomPrincipal principal
-            ,@RequestBody @Valid OrderRequest req) {
-        Long memberId = principal.getMemberId();
-
+    public ResponseEntity<SimpleResponse> saveMemberOrder(@RequestBody @Valid FreeOrderRequest req, @AuthenticationPrincipal Long memberId) {
         List<ItemOrderCountRequest> requests = req.getOrderItems().stream().map(ItemOrderCountRequest::new).toList();
-        //int orderItemsPrice = itemFeignClient.getTotalPrice(new ItemOrderCountRequestWrapper(requests));
         int orderItemsPrice = itemFeignClient.getTotalPrice(requests);
         orderService.validateMemberFreeOrderPrice(orderItemsPrice, req.getMemberCouponId(), req.getUsedPoint(), memberId);
-
         orderService.saveMemberFreeOrder(
+                orderItemsPrice,
                 memberId,
                 req.getReceiverNickname(),
                 req.getReceiverPhone(),
@@ -94,8 +91,7 @@ public class OrderApiController {
                 req.getDeliveryMessage(),
                 req.getMemberCouponId(),
                 req.getUsedPoint(),
-                req.getOrderItems(),
-                principal.getBearerJwt()
+                req.getOrderItems()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new SimpleResponse("결제 완료"));
@@ -109,11 +105,13 @@ public class OrderApiController {
         PortOnePaymentStatus paymentStatus = PortOnePaymentStatus.valueOf((String) paymentResponse.get("status"));
         PortOneOrder portOneOrder = portOneService.convertCustomData((String) paymentResponse.get("customData"), paymentId);
         int clientTotal = (int) ((Map<String, Object>) paymentResponse.get("amount")).get("total");
-
+        List<ItemOrderCountRequest> requests = portOneOrder.getOrderItems().stream().map(ItemOrderCountRequest::new).toList();
+        int orderItemsPrice = itemFeignClient.getTotalPrice(requests);
         portOneService.validatePaymentStatus(paymentStatus);
-        orderService.validateGuestOrder(portOneOrder, clientTotal);
+        orderService.validateGuestOrder(orderItemsPrice, portOneOrder, clientTotal);
 
         Long orderId = orderService.saveGuestOrder(
+                orderItemsPrice,
                 portOneOrder.getPaymentId(),
                 portOneOrder.getSenderNickname(),
                 portOneOrder.getSenderEmail(),

@@ -1,25 +1,33 @@
 package org.example.tamaapi.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.tamaapi.command.order.OrderRepository;
+import org.example.tamaapi.command.EmailService;
+import org.example.tamaapi.command.PortOneService;
+import org.example.tamaapi.command.order.OrderService;
 import org.example.tamaapi.common.aspect.InternalOnly;
 import org.example.tamaapi.common.auth.CustomPrincipal;
 import org.example.tamaapi.common.util.ErrorMessageUtil;
 import org.example.tamaapi.domain.order.Order;
 import org.example.tamaapi.domain.order.OrderItem;
+import org.example.tamaapi.domain.order.PortOnePaymentStatus;
+import org.example.tamaapi.dto.PortOneOrder;
 import org.example.tamaapi.dto.feign.FullOrderResponse;
 import org.example.tamaapi.dto.feign.ItemOrderCountResponse;
-
+import org.example.tamaapi.dto.requestDto.order.OrderDetailRequest;
+import org.example.tamaapi.dto.requestDto.order.FreeOrderRequest;
+import org.example.tamaapi.dto.responseDto.SimpleResponse;
+import org.example.tamaapi.feignClient.item.ItemFeignClient;
+import org.example.tamaapi.feignClient.item.ItemOrderCountRequest;
 import org.example.tamaapi.query.order.OrderItemQueryRepository;
 import org.example.tamaapi.query.order.OrderQueryRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
-
+import java.util.Map;
 import static org.example.tamaapi.common.util.ErrorMessageUtil.NOT_FOUND_ORDER_ITEM;
 
 @RestController
@@ -42,6 +50,7 @@ public class FeignApiController {
         List<ItemOrderCountResponse> itemOrderCountRespons = orderItems.stream().map(ItemOrderCountResponse::new).toList();
         return itemOrderCountRespons;
     }
+
     /*
     //Long memberId로 받으면, 개발자가 용도에 안 맞게 쓸 가능성이 있음
     @GetMapping("/api/orders/{orderId}")
@@ -74,11 +83,37 @@ public class FeignApiController {
     }
 
     @GetMapping("/api/ordersItem/{orderItemId}/member")
-    public Long getOrderItemMember(@PathVariable Long orderItemId, @AuthenticationPrincipal CustomPrincipal principal) {
+    public Long getOrderItemMember(@PathVariable Long orderItemId) {
         OrderItem orderItem = orderItemQueryRepository.findWithOrderById(orderItemId)
                 .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_ORDER_ITEM));
-
         return orderItem.getOrder().getMemberId();
     }
+    /*
+    @PostMapping("/api/orders/member")
+    public ResponseEntity<SimpleResponse> saveMemberOrder(@RequestBody PortOneOrder portOneOrder,  @ModelAttribute OrderDetailRequest req) {
+
+        Long memberId = req.getMemberId();
+        int orderItemsPrice = req.getOrderItemsPrice();
+        int clientTotal = req.getClientTotal();
+
+        orderService.validateMemberOrder(orderItemsPrice, portOneOrder, clientTotal, memberId);
+        orderService.saveMemberOrder(
+                orderItemsPrice,
+                portOneOrder.getPaymentId(),
+                memberId,
+                portOneOrder.getReceiverNickname(),
+                portOneOrder.getReceiverPhone(),
+                portOneOrder.getZipCode(),
+                portOneOrder.getStreetAddress(),
+                portOneOrder.getDetailAddress(),
+                portOneOrder.getDeliveryMessage(),
+                portOneOrder.getMemberCouponId(),
+                req.getUsedCouponPrice(),
+                portOneOrder.getUsedPoint(),
+                portOneOrder.getOrderItems());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new SimpleResponse("결제 완료"));
+    }
+    */
 
 }

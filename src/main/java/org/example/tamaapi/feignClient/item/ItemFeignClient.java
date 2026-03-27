@@ -20,7 +20,11 @@ public interface ItemFeignClient {
     @PutMapping("/api/items/stocks/increase")
     void increaseStocks(@RequestBody List<ItemOrderCountRequest> requests);
 
+    //+테이블에 감소 로그 저장
     @PutMapping("/api/items/stocks/decrease")
-    void decreaseStocks(@RequestBody List<ItemOrderCountRequest> requests);
+    void decreaseStocks(@RequestBody List<ItemOrderCountRequest> requests, @RequestParam String uuid);
+
+    @GetMapping("/api/items/stock/decrease/log")
+    boolean existDecreaseStockLog(@RequestParam String paymentId);
 
 }

@@ -16,8 +16,9 @@ public interface MemberFeignClient {
             @RequestParam("orderItemsPrice") int orderItemsPrice
     );
 
+    //+쿠폰,포인트 사용 로그 남김
     @PutMapping("/api/member/discount/use")
-    void useCouponAndPoint(@RequestBody UsedCouponAndPointRequest usedCouponAndPointRequest, @RequestHeader("Authorization") String bearerJwt);
+    void useCouponAndPoint(@RequestBody UsedCouponAndPointRequest usedCouponAndPointRequest);
 
     /* 나중에 환불 접수된 주문 처리 기능 만들때 필요
     @PutMapping("/api/member/discount/rollback")
@@ -30,4 +31,6 @@ public interface MemberFeignClient {
     @GetMapping("/api/member/coupon/{memberCouponId}/validate")
     void validateCoupon(@PathVariable Long memberCouponId);
 
+    @GetMapping("/api/member/discount/log")
+    boolean existDiscountLog(@RequestParam String paymentId);
 }

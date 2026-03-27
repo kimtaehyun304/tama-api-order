@@ -1,6 +1,7 @@
 package org.example.tamaapi.command.order;
 
 import jakarta.persistence.EntityManager;
+import org.example.tamaapi.common.aspect.LogExecutionTime;
 import org.example.tamaapi.domain.order.Delivery;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,8 @@ class OrderServiceTest {
 
 
     @Test
-    void 아웃박스_폴링_경합_테스트() throws InterruptedException {
+    @LogExecutionTime
+    void 주문_동시_테스트() throws InterruptedException {
         int threadCount = 1;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);

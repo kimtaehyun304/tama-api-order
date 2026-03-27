@@ -7,29 +7,17 @@ import org.example.tamaapi.command.EmailService;
 import org.example.tamaapi.command.PortOneService;
 import org.example.tamaapi.command.order.OrderService;
 import org.example.tamaapi.common.auth.CustomPrincipal;
-import org.example.tamaapi.common.exception.MyBadRequestException;
-import org.example.tamaapi.domain.order.Order;
-import org.example.tamaapi.domain.order.PortOnePaymentStatus;
-import org.example.tamaapi.dto.PortOneOrder;
-import org.example.tamaapi.dto.requestDto.order.CancelMemberOrderRequest;
-import org.example.tamaapi.dto.requestDto.order.OrderRequest;
+import org.example.tamaapi.dto.requestDto.order.FreeOrderRequest;
 import org.example.tamaapi.dto.responseDto.SimpleResponse;
 import org.example.tamaapi.feignClient.item.ItemFeignClient;
 import org.example.tamaapi.feignClient.item.ItemOrderCountRequest;
 import org.example.tamaapi.query.order.OrderQueryRepository;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.List;
-import java.util.Map;
-
-import static org.example.tamaapi.common.util.ErrorMessageUtil.INVALID_HEADER;
-import static org.example.tamaapi.common.util.ErrorMessageUtil.NOT_FOUND_ORDER;
 
 ;
 
@@ -47,7 +35,7 @@ public class TestApiController {
 
     @PostMapping("/api/test/circuit-breaker")
     public ResponseEntity<SimpleResponse> saveMemberOrder(@AuthenticationPrincipal CustomPrincipal principal
-            ,@RequestBody @Valid OrderRequest req) {
+            ,@RequestBody @Valid FreeOrderRequest req) {
         Long memberId = principal.getMemberId();
 
         List<ItemOrderCountRequest> requests = req.getOrderItems().stream().map(ItemOrderCountRequest::new).toList();
@@ -56,6 +44,7 @@ public class TestApiController {
         orderService.validateMemberFreeOrderPrice(orderItemsPrice, req.getMemberCouponId(), req.getUsedPoint(), memberId);
 
         orderService.saveMemberFreeOrder(
+                orderItemsPrice,
                 memberId,
                 req.getReceiverNickname(),
                 req.getReceiverPhone(),
@@ -65,8 +54,7 @@ public class TestApiController {
                 req.getDeliveryMessage(),
                 req.getMemberCouponId(),
                 req.getUsedPoint(),
-                req.getOrderItems(),
-                principal.getBearerJwt()
+                req.getOrderItems()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new SimpleResponse("결제 완료"));

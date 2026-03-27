@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UsedCouponAndPointRequest {
 
+    private String paymentId;
+
     private Long memberCouponId;
 
     @PositiveOrZero
@@ -26,4 +28,5 @@ public class UsedCouponAndPointRequest {
     @Positive
     private int orderItemsPrice;
 
+    private Long memberId;
 }

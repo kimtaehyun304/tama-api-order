@@ -63,6 +63,7 @@ public class AutoOrderCompleteJobConfig {
         return reader;
     }
 
+    //processor 필요없어서 안 씀
     @Bean
     public ItemWriter<Long> orderUpdateWriter() {
         return chunk -> {

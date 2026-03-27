@@ -5,17 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.tamaapi.domain.EventType;
-import org.example.tamaapi.feignClient.item.ItemOrderCountRequest;
-
-import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class IncreaseStockEvent {
+public class RollbackCouponAndPointEvent {
 
-    private final EventType eventType = EventType.INCREASE_STOCK;
+    private final EventType eventType = EventType.ROLLBACK_COUPON_AND_POINT;
     private String paymentId;
-    private List<ItemOrderCountRequest> requests;
+    private Long memberId;
+    private Long memberCouponId;
+    private Integer usedPoint;
+    private Integer rewardPoint;
 
 }

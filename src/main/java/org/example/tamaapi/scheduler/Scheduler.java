@@ -1,13 +1,16 @@
 package org.example.tamaapi.scheduler;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.example.tamaapi.command.OutboxRepository;
 import org.example.tamaapi.command.order.OutboxService;
 import org.example.tamaapi.common.util.ThreadUtil;
+import org.example.tamaapi.domain.EventType;
 import org.example.tamaapi.domain.outbox.Outbox;
 import org.example.tamaapi.domain.outbox.OutboxStatus;
+import org.example.tamaapi.event.ItemEventProducer;
 import org.example.tamaapi.event.OrderEventProducer;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
@@ -32,6 +35,7 @@ public class Scheduler {
 
     private final OutboxRepository outboxRepository;
     private final OrderEventProducer orderEventProducer;
+    private final ItemEventProducer itemEventProducer;
     private final OutboxService outboxService;
     private final ThreadUtil threadUtil;
 
@@ -54,31 +58,15 @@ public class Scheduler {
 
     //멀티 쓰레드 스케줄러라서 경합을 방지하기 위해 fixedDelay 사용
     //싱글 쓰레드 스케줄러일 경우 fixedRate여도 무관
-    @Scheduled(fixedDelay = 1000)
-    public void publishMessages() {
-        List<Long> orderIds = outboxRepository.findTop100SkipLocked(OutboxStatus.PENDING.toString())
-                .stream().map(Outbox::getAggregateId).toList();
+    @Scheduled(fixedDelay = 1000, zone = "Asia/Seoul")
+    public void publishSyncOrderCreatedEvent() {
+        List<Outbox> outboxes = outboxRepository.findTop100Event(OutboxStatus.PENDING.toString(), EventType.ORDER_CREATED.toString()).stream().toList();
 
-        if(!orderIds.isEmpty()) {
-            orderEventProducer.produceCompletableOrderCreatedEvents(orderIds);
-            outboxService.updateOutboxStatusToSent(orderIds);
+        if(!outboxes.isEmpty()) {
+            List<Long> sentOutboxIds = orderEventProducer.produceSyncOrderCreatedEvents(outboxes);
+            outboxService.updateOutboxStatusToSentInId(sentOutboxIds);
         }
     }
 
-    /*
-    //멀티 인스턴스 상황을 재연하기 위해 폴링 스케줄러 추가
-    //스케줄러 디폴트는 싱글 쓰레드라 멀티로 변경 필요)
-    //구매 확정 스케줄러 있어서 멀티 쓰레드 유지
-    @Scheduled(fixedDelay = 1000)
-    public void publishMessages2() {
-        List<Long> orderIds = outboxRepository.findTop100SkipLocked(OutboxStatus.PENDING.toString())
-                .stream().map(Outbox::getAggregateId).toList();
-
-        if(!orderIds.isEmpty()) {
-            orderEventProducer.produceCompletableOrderCreatedEvents(orderIds);
-            outboxService.updateOutboxStatusToSent(orderIds);
-        }
-    }
-     */
 
 }

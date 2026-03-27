@@ -81,7 +81,6 @@ public class OrderTxService {
         Order order = (memberId != null)
                     ? Order.createMemberOrder(paymentId, memberId, delivery, memberCouponId, usedCouponPrice, usedPoint, shippingFee, orderItems)
                 : Order.createGuestOrder(paymentId, guest, delivery, shippingFee, orderItems);
-
         
         //트랜잭션 전파로 인해 즉시 insert 쿼리 발생
         orderRepository.save(order);

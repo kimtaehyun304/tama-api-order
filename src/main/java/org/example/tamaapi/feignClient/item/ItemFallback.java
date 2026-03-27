@@ -33,8 +33,15 @@ public class ItemFallback implements ItemFeignClient{
     }
 
     @Override
-    public void decreaseStocks(List<ItemOrderCountRequest> requests) {
+    public void decreaseStocks(List<ItemOrderCountRequest> requests, String uuid) {
         throwOriginalException(cause);
+    }
+
+    @Override
+    public boolean existDecreaseStockLog(String paymentId) {
+        throwOriginalException(cause);
+        //어짜피 예외발생해서 그냥 false로 해둠. Boolean 타입이 아니라 null 불가
+        return false;
     }
 
 }

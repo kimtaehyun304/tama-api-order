@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tamaapi.common.util.ThreadUtil;
 import org.example.tamaapi.domain.order.OrderStatus;
+import org.example.tamaapi.domain.outbox.Outbox;
 import org.example.tamaapi.feignClient.item.ItemOrderCountRequest;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -22,42 +23,23 @@ import java.util.concurrent.CompletableFuture;
 public class OrderEventProducer {
     private final ThreadUtil threadUtil;
     private final KafkaTemplate<String, OrderCreatedEvent> kafkaTemplate;
-    private final String ORDER_TOPIC = "order_topic";
 
-    @Async
-    public void produceAsyncOrderCreatedEvent(Long orderId) {
-        try {
-            OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent(orderId);
-            kafkaTemplate.send(ORDER_TOPIC, orderCreatedEvent);
-        } catch (Exception e) {
-            log.error("카프카 발송 실패. 이유={}", e.getMessage());
-        }
-    }
+    //카프카는 토픽에 온 메시지를 읽는거라, 다른 이벤트여도 컨슈머가 읽을 수있어서, 다른 토픽 사용
+    private final String ORDER_SYNC_TOPIC = "order_sync_topic";
 
-    public void produceOrderCreatedEvent(Long orderId) {
-        try {
-            OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent(orderId);
-            kafkaTemplate.send(ORDER_TOPIC, orderCreatedEvent);
-        } catch (Exception e) {
-            log.error("카프카 발송 실패. 이유={}", e.getMessage());
-        }
-    }
-
-    public List<Long> produceCompletableOrderCreatedEvents(List<Long> orderIds) {
-        System.out.println("produceCompletableOrderCreatedEvents");
+    public List<Long> produceSyncOrderCreatedEvents(List<Outbox> outboxes) {
         List<CompletableFuture<Long>> futures = new ArrayList<>();
 
         //whenComplete + 일반 arraylist.add()는 동시성 이슈
-        for (Long orderId : orderIds) {
-            OrderCreatedEvent event = new OrderCreatedEvent(orderId);
-
+        for (Outbox outbox : outboxes) {
+            OrderCreatedEvent event = new OrderCreatedEvent(outbox.getAggregateId());
             CompletableFuture<Long> future =
-                    kafkaTemplate.send(ORDER_TOPIC, orderId.toString(), event)
-                            .thenApply(result -> orderId) // 성공 → orderId 반환
+                    kafkaTemplate.send(ORDER_SYNC_TOPIC, event)
+                            .thenApply(result -> outbox.getId()) // 성공 → outBoxId 반환
                             .exceptionally(ex -> {
-                                log.error("Kafka 발송 실패. orderId={}, topic={}",
-                                        orderId, ORDER_TOPIC, ex);
-                                return null; // 실패 → null
+                                log.error("Kafka 발송 실패. outboxId={}, orderId={}, topic={}",
+                                        outbox.getId(), outbox.getAggregateId(), ORDER_SYNC_TOPIC);
+                                return null;
                             });
 
             futures.add(future);
@@ -72,5 +54,27 @@ public class OrderEventProducer {
                 .filter(Objects::nonNull)     // 성공만
                 .toList();
     }
+
+    /*
+    @Async
+    public void produceAsyncOrderCreatedEvent(Long orderId) {
+        try {
+            OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent(orderId);
+            kafkaTemplate.send(TOPIC, orderCreatedEvent);
+        } catch (Exception e) {
+            log.error("카프카 발송 실패. 이유={}", e.getMessage());
+        }
+    }
+
+    public void produceOrderCreatedEvent(Long orderId) {
+        try {
+            OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent(orderId);
+            kafkaTemplate.send(TOPIC, orderCreatedEvent);
+        } catch (Exception e) {
+            log.error("카프카 발송 실패. 이유={}", e.getMessage());
+        }
+    }
+    */
+
 
 }

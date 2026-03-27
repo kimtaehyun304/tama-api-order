@@ -55,7 +55,7 @@ public class PortOneService {
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, (req, res) -> {
                     //res 포함하면 복잡해서 포함 안했음. 보안상 민감한 내용 있을수도 있고
-                    String clientMsg = String.format("결제 취소를 실패했습니다. 원인: 포트원 결제 취소 API 호출 실패");
+                    String clientMsg ="포트원 서버 장애로 결제 취소를 실패했습니다";
 
                     String serverMsg = String.format("결제 취소를 실패했습니다. 원인: 포트원 결제 취소 API 호출 실패, res:%s", res);
                     log.error(serverMsg);
@@ -63,7 +63,7 @@ public class PortOneService {
                 })
                 .toBodilessEntity();
         //예외로 인해 결제가 자동 취소되는 경우가 있는데, 이 때 잘 취소됐는지 확인을 위해
-        log.debug(String.format("결제가 취소됐습니다. 이유:%s, 결제번호:%s", reason, paymentId));
+        //log.debug(String.format("결제가 취소됐습니다. 이유:%s, 결제번호:%s", reason, paymentId));
     }
 
     //프론트에서 customData 양식 못 맞추면 예외 발생 가능

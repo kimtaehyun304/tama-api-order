@@ -1,11 +1,14 @@
 package org.example.tamaapi.domain.outbox;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.tamaapi.domain.BaseEntity;
 import org.example.tamaapi.domain.EventType;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
@@ -19,8 +22,11 @@ public class Outbox extends BaseEntity {
     @Column(name = "outbox_id")
     private Long id;
 
-    @Column(nullable = false)
     private Long aggregateId;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "json")
+    private JsonNode payload;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -30,6 +36,12 @@ public class Outbox extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OutboxStatus status;
+
+    public Outbox(JsonNode payload, EventType eventType) {
+        this.payload = payload;
+        this.eventType = eventType;
+        this.status = OutboxStatus.PENDING;
+    }
 
     public Outbox(Long aggregateId, EventType eventType) {
         this.aggregateId = aggregateId;

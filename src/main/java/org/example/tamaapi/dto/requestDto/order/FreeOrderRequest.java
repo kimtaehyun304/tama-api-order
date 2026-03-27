@@ -11,17 +11,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ToString
-public class OrderRequest {
-
-    //무료 주문은 PG사를 안거치므로 누락되도 정상
-    private String paymentId;
-
-    //--주문 고객---
-    //엑세스 토큰이 있는 경우 누락되도 정상
-    private String senderNickname;
-
-    //엑세스 토큰이 있는 경우 누락되도 정상
-    private String senderEmail;
+public class FreeOrderRequest {
 
     //---받는 고객---
     @NotBlank

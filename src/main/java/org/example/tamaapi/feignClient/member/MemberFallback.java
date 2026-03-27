@@ -20,7 +20,7 @@ public class MemberFallback implements MemberFeignClient{
     }
 
     @Override
-    public void useCouponAndPoint(UsedCouponAndPointRequest usedCouponAndPointRequest, String bearerJwt) {
+    public void useCouponAndPoint(UsedCouponAndPointRequest usedCouponAndPointRequest) {
         throwOriginalException(cause);
     }
 
@@ -33,6 +33,12 @@ public class MemberFallback implements MemberFeignClient{
     @Override
     public void validateCoupon(Long memberCouponId) {
         throwOriginalException(cause);
+    }
+
+    @Override
+    public boolean existDiscountLog(String paymentId) {
+        throwOriginalException(cause);
+        return false;
     }
 
 }

@@ -38,6 +38,16 @@ public class OutboxService {
 
     private final EntityManager em;
 
+    //db가 asia
+    public void updateOutboxStatusToSentInId(List<Long> outBoxIds) {
+        int count = em.createQuery("update Outbox o set o.status = :SENT, o.updatedAt = now() where o.id in :outBoxIds")
+                .setParameter("SENT", OutboxStatus.SENT)
+                .setParameter("outBoxIds", outBoxIds)
+                .executeUpdate();
+        if(count !=0)
+            log.info("{}건 아웃박스 SENT 처리 완료", count);
+    }
+    /*
     public void updateOutboxStatusToSent(List<Long> orderIds) {
         int count = em.createQuery("update Outbox o set o.status = :SENT, o.updatedAt = now() where o.aggregateId in :orderIds")
                 .setParameter("SENT", OutboxStatus.SENT)
@@ -46,5 +56,5 @@ public class OutboxService {
         if(count !=0)
             log.info("{}건 아웃박스 SENT 처리 완료", count);
     }
-
+    */
 }
