@@ -5,7 +5,7 @@ import org.example.tamaapi.dto.feign.UsedCouponAndPointRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "member-service", url = "http://localhost:5003"
+@FeignClient(name = "member-service", url = "http://localhost:5004"
         , configuration = MemberFeignClientConfig.class
         , fallbackFactory = MemberFallbackFactory.class)
 public interface MemberFeignClient {

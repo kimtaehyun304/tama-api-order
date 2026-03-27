@@ -37,7 +37,8 @@ class OrderServiceTest {
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
-        String url = "http://localhost:" + 5001 + "/api/orders/free/member";
+
+        String url = "http://localhost:" + 5002 + "/api/orders/free/member";
 
         String body = """
     {
