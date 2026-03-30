@@ -56,10 +56,12 @@ public class Scheduler {
     }
 
 
-    //멀티 쓰레드 스케줄러라서 경합을 방지하기 위해 fixedDelay 사용
-    //싱글 쓰레드 스케줄러일 경우 fixedRate여도 무관
+    //fixedDelay 1초 지나도 작업이 종료되야 다음거 실행 (fixedRate는 딱 시간마다 실행하므로 db 지연되면 경합 가능성)
+    //
+    //p.s)fixedRate 쓰러면 스케줄러 설정을 멀티 쓰레드로 바꿔야 함
     @Scheduled(fixedDelay = 1000, zone = "Asia/Seoul")
     public void publishSyncOrderCreatedEvent() {
+        //서버 스케일 아웃하면, 스케줄러 동시에 여러개 실행되므로 스킵락 사용
         List<Outbox> outboxes = outboxRepository.findTop100Event(OutboxStatus.PENDING.toString(), EventType.ORDER_CREATED.toString()).stream().toList();
 
         if(!outboxes.isEmpty()) {

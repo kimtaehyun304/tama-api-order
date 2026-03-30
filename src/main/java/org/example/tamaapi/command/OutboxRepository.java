@@ -15,7 +15,7 @@ public interface OutboxRepository extends JpaRepository<Outbox, Long> {
 
 
     //before: List<Outbox> findTop100ByStatusOrderByIdAsc(OutboxStatus status)
-    //카프카 이벤트 중복 소비 방지 (이벤트 내용은 같은데, 멀티 인스턴스에서 각자 발행하는거라 카프카가 중복 이벤트로 생각 안함)
+    //서버 스케일 아웃 환경에서의 카프카 이벤트 중복 컨슘 방지
     @Transactional
     @Query(value = "SELECT * FROM outbox " +
             "WHERE status = :status AND event_type = :eventType " +

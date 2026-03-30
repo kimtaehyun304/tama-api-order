@@ -85,6 +85,7 @@ public class OrderTxService {
         //트랜잭션 전파로 인해 즉시 insert 쿼리 발생
         orderRepository.save(order);
         saveOrderItems(orderItems);
+        //아웃박스 패턴은 공통 db 동기화를 위해 사용
         outboxRepository.save(new Outbox(order.getId(), EventType.ORDER_CREATED));
         return order.getId();
     }

@@ -121,10 +121,6 @@ public class OrderService {
             portOneService.cancelPayment(paymentId, e.getMessage());
             String failMessage = "주문을 실패했습니다";
             throw new RuntimeException(failMessage);
-
-            //아웃박스 패턴하려했는데, 아웃박스 저장 실패했을때 원자적 같이 취소할게 없어서 안했음
-            //대신 이벤트 발행 실패하면 producer dead letter 브로커에 보냄
-
             //주문은 자동 롤백
         }
     }
