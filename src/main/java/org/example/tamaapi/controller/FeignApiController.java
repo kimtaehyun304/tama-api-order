@@ -28,6 +28,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+
+import static org.example.tamaapi.common.util.ErrorMessageUtil.NOT_FOUND_ORDER;
 import static org.example.tamaapi.common.util.ErrorMessageUtil.NOT_FOUND_ORDER_ITEM;
 
 @RestController
@@ -52,7 +54,7 @@ public class FeignApiController {
     }
 
     /*
-    //Long memberId로 받으면, 개발자가 용도에 안 맞게 쓸 가능성이 있음
+    //Long memberId로 받으면, 토큰 인증 안한건데 개발자가 그냥 호출할 가능성 있으니 주의
     @GetMapping("/api/orders/{orderId}")
     public OrderResponse getOrder(@PathVariable Long orderId, @AuthenticationPrincipal CustomPrincipal principal) {
         System.out.println("orderId = " + orderId);
@@ -88,32 +90,12 @@ public class FeignApiController {
                 .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_ORDER_ITEM));
         return orderItem.getOrder().getMemberId();
     }
-    /*
-    @PostMapping("/api/orders/member")
-    public ResponseEntity<SimpleResponse> saveMemberOrder(@RequestBody PortOneOrder portOneOrder,  @ModelAttribute OrderDetailRequest req) {
 
-        Long memberId = req.getMemberId();
-        int orderItemsPrice = req.getOrderItemsPrice();
-        int clientTotal = req.getClientTotal();
-
-        orderService.validateMemberOrder(orderItemsPrice, portOneOrder, clientTotal, memberId);
-        orderService.saveMemberOrder(
-                orderItemsPrice,
-                portOneOrder.getPaymentId(),
-                memberId,
-                portOneOrder.getReceiverNickname(),
-                portOneOrder.getReceiverPhone(),
-                portOneOrder.getZipCode(),
-                portOneOrder.getStreetAddress(),
-                portOneOrder.getDetailAddress(),
-                portOneOrder.getDeliveryMessage(),
-                portOneOrder.getMemberCouponId(),
-                req.getUsedCouponPrice(),
-                portOneOrder.getUsedPoint(),
-                portOneOrder.getOrderItems());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(new SimpleResponse("결제 완료"));
+    //존재하는 paymentId만 return
+    @GetMapping("/api/orders/payment-ids/existing")
+    public List<String> findExistingPaymentIds(@RequestParam List<String> paymentIds) {
+        List<Order> orders = orderQueryRepository.findAllByPaymentIdIn(paymentIds);
+        return orders.stream().map(Order::getPaymentId).toList();
     }
-    */
 
 }

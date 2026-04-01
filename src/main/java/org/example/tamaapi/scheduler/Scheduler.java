@@ -12,6 +12,7 @@ import org.example.tamaapi.domain.outbox.Outbox;
 import org.example.tamaapi.domain.outbox.OutboxStatus;
 import org.example.tamaapi.event.ItemEventProducer;
 import org.example.tamaapi.event.OrderEventProducer;
+import org.example.tamaapi.feignClient.item.ItemFeignClient;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -35,9 +36,8 @@ public class Scheduler {
 
     private final OutboxRepository outboxRepository;
     private final OrderEventProducer orderEventProducer;
-    private final ItemEventProducer itemEventProducer;
     private final OutboxService outboxService;
-    private final ThreadUtil threadUtil;
+    private final ItemFeignClient itemFeignClient;
 
     //사용하지 않는 이미지를 주기적으로 제거하려했는데, 이미지 수정할 때 비동기로 지워주면 됨!
 
@@ -55,9 +55,8 @@ public class Scheduler {
         }
     }
 
-
-    //fixedDelay 1초 지나도 작업이 종료되야 다음거 실행 (fixedRate는 딱 시간마다 실행하므로 db 지연되면 경합 가능성)
-    //
+    //fixedDelay 1초 지나도 작업이 종료되야 다음거 실행
+    //fixedRate는 딱 시간마다 실행하므로 db 지연되면 경합 가능성
     //p.s)fixedRate 쓰러면 스케줄러 설정을 멀티 쓰레드로 바꿔야 함
     @Scheduled(fixedDelay = 1000, zone = "Asia/Seoul")
     public void publishSyncOrderCreatedEvent() {
@@ -69,6 +68,5 @@ public class Scheduler {
             outboxService.updateOutboxStatusToSentInId(sentOutboxIds);
         }
     }
-
 
 }

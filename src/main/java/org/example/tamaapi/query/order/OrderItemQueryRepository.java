@@ -17,4 +17,5 @@ public interface OrderItemQueryRepository extends JpaRepository<OrderItem, Long>
     @Query("select oi from OrderItem oi join fetch oi.order o where oi.id =:orderItemId")
     Optional<OrderItem> findWithOrderById(Long orderItemId);
 
+
 }

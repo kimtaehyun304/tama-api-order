@@ -21,22 +21,25 @@ public class AsyncConfig implements AsyncConfigurer {
     @Override
     @Bean(name = "emailExecutor")
     public Executor getAsyncExecutor() {
+        //가상쓰레드는 jdk 21부터 지원 + 가상 쓰레드 개수는 무제한이라 세마포어로 제한 필요
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
-        // 잘 모르겠어서, 톰캣 디폴트 값의 절반 만큼 지정
-        executor.setCorePoolSize(50);
-        executor.setMaxPoolSize(100);
-        executor.setQueueCapacity(50);
+        //톰캣 요청만큼 수행하기위해, 톰캣 설정에 맞춤 (톰캣 기본값)
+
+        //최소 유지 쓰레드 수
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(200);
+        executor.setQueueCapacity(100);
         executor.setKeepAliveSeconds(60);
 
         executor.setThreadNamePrefix("AsyncTask-");
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
+        //executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
         executor.setRejectedExecutionHandler((r, exec) -> {
             log.error("async task rejected! because async queue is full");
         });
 
         executor.setWaitForTasksToCompleteOnShutdown(true);
-        executor.setAwaitTerminationSeconds(20);
+        executor.setAwaitTerminationSeconds(30);
 
         executor.initialize();
         return executor;

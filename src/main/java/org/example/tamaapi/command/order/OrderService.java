@@ -102,7 +102,9 @@ public class OrderService {
                                 List<PortOneOrderItem> orderItems) {
         try {
             //재고 감소
+            //여기서 주문 pending 저장하면
             List<ItemOrderCountRequest> requests = orderItems.stream().map(ItemOrderCountRequest::new).toList();
+            //차감은하나 주문 완료는 아닌상태
             decreaseStock(paymentId, requests);
 
             //쿠폰 포인트 사용
@@ -114,8 +116,9 @@ public class OrderService {
             saveOrderTx(orderItemsPrice, paymentId, memberId, null, receiverNickname, receiverPhone, zipCode, streetAddress, detailAddress,
                     message, memberCouponId, usedPoint, orderItems, usedCouponPrice, requests, rewardPoint);
 
-            //폴링 부하를 방지하려면  message.published = true; outbox.save(message); (별 차이 없을 듯)
+            //재고 차감 로그는 상품 서버 스케줄러에서 자동으로 삭제
 
+            //폴링 부하를 방지하려면  message.published = true; outbox.save(message); (별 차이 없을 듯)
             //아웃박스 폴링, 이벤트 발행,소비 진행 시간 고려하여 1.5초 쯤 대기해야함. 브라우저에서 대기해야 성능 문제 없음
         } catch (Exception e) {
             portOneService.cancelPayment(paymentId, e.getMessage());
@@ -143,15 +146,20 @@ public class OrderService {
             String paymentId = "free-order-" + UUID.randomUUID();
             decreaseStock(paymentId, requests);
 
+
             //쿠폰 포인트 사용
             int usedCouponPrice = (memberCouponId == null) ? 0 : memberFeignClient.getCouponPrice(memberCouponId, orderItemsPrice);
             int rewardPoint = (int) ((orderItemsPrice - usedCouponPrice - usedPoint) * REWARD_POINT_RATE);
             useCouponAndPoint(orderItemsPrice, paymentId, memberCouponId, usedPoint, memberId, usedCouponPrice, rewardPoint, requests);
 
+            throw new RuntimeException("서버 down");
+
+            /*
             saveOrderTx(orderItemsPrice, paymentId, memberId, null, receiverNickname, receiverPhone, zipCode, streetAddress, detailAddress
                     , message, memberCouponId, usedPoint, orderItems, usedCouponPrice, requests, rewardPoint);
-
+            */
             //포인트 적립 X (무료 주문이라)
+
         } catch (Exception e) {
             String failMessage = String.format("주문을 실패했습니다. %s", e.getMessage());
             throw new RuntimeException(failMessage);

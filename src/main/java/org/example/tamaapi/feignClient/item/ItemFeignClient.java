@@ -24,7 +24,7 @@ public interface ItemFeignClient {
     @PutMapping("/api/items/stocks/decrease")
     void decreaseStocks(@RequestBody List<ItemOrderCountRequest> requests, @RequestParam String uuid);
 
-    @GetMapping("/api/items/stock/decrease/log")
+    @GetMapping("/api/items/stock/decrease/log/exist")
     boolean existDecreaseStockLog(@RequestParam String paymentId);
 
 }

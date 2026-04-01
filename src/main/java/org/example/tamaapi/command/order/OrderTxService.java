@@ -59,23 +59,14 @@ public class OrderTxService {
 
     //saveOrderItems만 실패할 수 있어서 트랜잭션 묶음
 
-    public Long saveOrder(String paymentId,
-                           Long memberId,
-                           Guest guest,
-                           String receiverNickname,
-                           String receiverPhone,
-                           String zipCode,
-                           String streetAddress,
-                           String detailAddress,
-                           String message,
-                           int shippingFee,
-                           Long memberCouponId,
-                           int usedCouponPrice,
-                           int usedPoint,
-                           List<PortOneOrderItem> portOneOrderItems) {
-
+    public Long saveOrder(String paymentId, Long memberId,
+                           Guest guest, String receiverNickname,
+                           String receiverPhone, String zipCode,
+                           String streetAddress, String detailAddress,
+                           String message, int shippingFee,
+                           Long memberCouponId, int usedCouponPrice,
+                           int usedPoint, List<PortOneOrderItem> portOneOrderItems) {
         Delivery delivery = new Delivery(zipCode, streetAddress, detailAddress, message, receiverNickname, receiverPhone);
-        
         List<OrderItem> orderItems = createOrderItem(portOneOrderItems);
 
         Order order = (memberId != null)

@@ -33,6 +33,7 @@ public class OrderEventProducer {
         //whenComplete + 일반 arraylist.add()는 동시성 이슈
         for (Outbox outbox : outboxes) {
             OrderCreatedEvent event = new OrderCreatedEvent(outbox.getAggregateId());
+            //비동기지만 한번에 모아서 전송하는 단일 쓰레드 방식
             CompletableFuture<Long> future =
                     kafkaTemplate.send(ORDER_SYNC_TOPIC, event)
                             .thenApply(result -> outbox.getId()) // 성공 → outBoxId 반환
