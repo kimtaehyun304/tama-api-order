@@ -21,13 +21,14 @@ public class EmailService {
 
 
     @Async("emailExecutor")
+    @Retryable(backoff = @Backoff(delay = 3000, multiplier = 2), recover = "recover")
+    //aop라 public
     public void sendGuestOrderEmailAsync(String toMailAddr, String buyerName, Long orderId) {
         String subject = "[TAMA] 비회원 주문 결제 안내";
         String body = String.format("주문자 이름: %s, 주문 번호: %s <p>TAMA 사이트에서 주문 상세정보를 볼 수 있습니다.</p>", buyerName, orderId);
         sendEmail(toMailAddr, subject, body);
     }
 
-    @Retryable(backoff = @Backoff(delay = 3000, multiplier = 2), recover = "recover")
     private void sendEmail(String toMailAddr, String subject, String body) {
         MimeMessagePreparator mimeMessagePreparator = createMimeMessagePreparator(toMailAddr, subject, body);
         javaMailSender.send(mimeMessagePreparator);
