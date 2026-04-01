@@ -46,7 +46,7 @@ public class EmailService {
     @Recover
     //파라미터 안 필요해도 Retryable 메서드 파라미터랑 일치 해야 동작
     public void recover(Exception e, String toMailAddr, String buyerName, Long orderId) {
-        log.error("재시도한 모든 비동기 작업(메일 발송)을 실패했습니다. toMailAddr={}, buyerName={}, orderId={}, 원인={}",
+        log.error("[게스트 주문 메일 retry 실패] toMailAddr={}, buyerName={}, orderId={}, 원인={}",
                 toMailAddr, buyerName, orderId, e.getMessage());
     }
 
