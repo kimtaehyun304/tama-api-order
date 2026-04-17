@@ -18,9 +18,9 @@ public interface OutboxRepository extends JpaRepository<Outbox, Long> {
     //서버 스케일 아웃 환경에서의 카프카 이벤트 중복 컨슘 방지
     @Transactional
     @Query(value = "SELECT * FROM outbox " +
-            "WHERE status = :status AND event_type = :eventType " +
+            "WHERE status = :status " +
             "ORDER BY outbox_id LIMIT 100 FOR UPDATE SKIP LOCKED",
             nativeQuery = true)
-    List<Outbox> findTop100Event(String status, String eventType);
+    List<Outbox> findTop100Event(String status);
 
 }

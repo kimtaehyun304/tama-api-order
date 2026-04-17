@@ -25,12 +25,12 @@ public interface MemberFeignClient {
     void rollbackCouponAndPoint(@RequestBody UsedCouponAndPointRequest usedCouponAndPointRequest, @RequestHeader("Authorization") String bearerJwt);
      */
 
-    @GetMapping("/authority")
-    Authority findAuthority(@RequestHeader("Authorization") String bearerJwt);
+    @GetMapping("/api/member/{memberId}/authority")
+    Authority findAuthority(@PathVariable Long memberId);
 
     @GetMapping("/api/member/coupon/{memberCouponId}/validate")
     void validateCoupon(@PathVariable Long memberCouponId);
 
-    @GetMapping("/api/member/discount/log")
+    @GetMapping("/api/member/discount/log/exist")
     boolean existDiscountLog(@RequestParam String paymentId);
 }

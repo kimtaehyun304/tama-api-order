@@ -25,10 +25,11 @@ public class MemberFallback implements MemberFeignClient{
     }
 
     @Override
-    public Authority findAuthority(String bearerJwt) {
+    public Authority findAuthority(Long memberId) {
         throwOriginalException(cause);
         return null;
     }
+
 
     @Override
     public void validateCoupon(Long memberCouponId) {

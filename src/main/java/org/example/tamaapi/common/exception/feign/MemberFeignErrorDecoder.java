@@ -23,6 +23,7 @@ public class MemberFeignErrorDecoder implements ErrorDecoder {
         String body = readBody(response);
         SimpleFeignResponse feignRes = serializeBody(body);
 
+        
         if(feignRes.getCode() == null)
             return new RuntimeException(feignRes.getMessage());
 

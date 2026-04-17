@@ -1,7 +1,7 @@
 package org.example.tamaapi.domain.order;
 
 public enum OrderStatus {
-    IN_PEND("주문 중"),
+    //IN_PEND("주문 중"),
     ORDER_RECEIVED("주문 접수"),
     IN_DELIVERY("배송 중"),
     DELIVERED("배송 완료"),

@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.tamaapi.domain.BaseEntity;
+import org.hibernate.annotations.DynamicUpdate;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "orders")
+@DynamicUpdate
 public class Order extends BaseEntity {
 
     @Id
@@ -104,7 +107,7 @@ public class Order extends BaseEntity {
         this.id = id;
     }
 
-    public void changeStatus(OrderStatus status) {
+    public void updateStatus(OrderStatus status) {
         this.status = status;
     }
 

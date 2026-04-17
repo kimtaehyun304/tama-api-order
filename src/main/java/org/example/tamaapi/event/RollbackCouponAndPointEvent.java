@@ -11,7 +11,6 @@ import org.example.tamaapi.domain.EventType;
 @AllArgsConstructor
 public class RollbackCouponAndPointEvent {
 
-    private final EventType eventType = EventType.ROLLBACK_COUPON_AND_POINT;
     private String paymentId;
     private Long memberId;
     private Long memberCouponId;

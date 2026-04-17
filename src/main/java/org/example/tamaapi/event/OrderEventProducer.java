@@ -3,6 +3,7 @@ package org.example.tamaapi.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tamaapi.common.util.ThreadUtil;
+import org.example.tamaapi.domain.EventType;
 import org.example.tamaapi.domain.order.OrderStatus;
 import org.example.tamaapi.domain.outbox.Outbox;
 import org.example.tamaapi.feignClient.item.ItemOrderCountRequest;
@@ -22,17 +23,17 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class OrderEventProducer {
     private final ThreadUtil threadUtil;
-    private final KafkaTemplate<String, OrderCreatedEvent> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     //카프카는 토픽에 온 메시지를 읽는거라, 다른 이벤트여도 컨슈머가 읽을 수있어서, 다른 토픽 사용
     private final String ORDER_SYNC_TOPIC = "order_sync_topic";
 
-    public List<Long> produceSyncOrderCreatedEvents(List<Outbox> outboxes) {
+    public List<Long> produceOrderEvents(List<Outbox> outboxes) {
         List<CompletableFuture<Long>> futures = new ArrayList<>();
 
         //whenComplete + 일반 arraylist.add()는 동시성 이슈
         for (Outbox outbox : outboxes) {
-            OrderCreatedEvent event = new OrderCreatedEvent(outbox.getAggregateId());
+            OrderEvent event = new OrderEvent(outbox.getEventType(), outbox.getAggregateId());
             //비동기지만 한번에 모아서 전송하는 단일 쓰레드 방식
             CompletableFuture<Long> future =
                     kafkaTemplate.send(ORDER_SYNC_TOPIC, event)
@@ -55,27 +56,6 @@ public class OrderEventProducer {
                 .filter(Objects::nonNull)     // 성공만
                 .toList();
     }
-
-    /*
-    @Async
-    public void produceAsyncOrderCreatedEvent(Long orderId) {
-        try {
-            OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent(orderId);
-            kafkaTemplate.send(TOPIC, orderCreatedEvent);
-        } catch (Exception e) {
-            log.error("카프카 발송 실패. 이유={}", e.getMessage());
-        }
-    }
-
-    public void produceOrderCreatedEvent(Long orderId) {
-        try {
-            OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent(orderId);
-            kafkaTemplate.send(TOPIC, orderCreatedEvent);
-        } catch (Exception e) {
-            log.error("카프카 발송 실패. 이유={}", e.getMessage());
-        }
-    }
-    */
 
 
 }

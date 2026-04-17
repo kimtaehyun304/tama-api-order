@@ -20,4 +20,5 @@ public class CancelMemberOrderRequest {
     @NotNull
     private Boolean isFreeOrder;
 
+    private String reason = "구매자 취소 요청";
 }

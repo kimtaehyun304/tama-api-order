@@ -1,10 +1,13 @@
 package org.example.tamaapi.command.order;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tamaapi.command.OutboxRepository;
+import org.example.tamaapi.common.exception.feign.CustomCallNotPermittedException;
+import org.example.tamaapi.common.exception.feign.NotExistLogException;
 import org.example.tamaapi.common.exception.feign.RefusedDiscountException;
 import org.example.tamaapi.common.exception.feign.NotEnoughStockException;
 import org.example.tamaapi.domain.order.*;
@@ -102,7 +105,6 @@ public class OrderService {
                                 List<PortOneOrderItem> orderItems) {
         try {
             //재고 감소
-            //여기서 주문 pending 저장하면
             List<ItemOrderCountRequest> requests = orderItems.stream().map(ItemOrderCountRequest::new).toList();
             //차감은하나 주문 완료는 아닌상태
             decreaseStock(paymentId, requests);
@@ -146,18 +148,14 @@ public class OrderService {
             String paymentId = "free-order-" + UUID.randomUUID();
             decreaseStock(paymentId, requests);
 
-
             //쿠폰 포인트 사용
             int usedCouponPrice = (memberCouponId == null) ? 0 : memberFeignClient.getCouponPrice(memberCouponId, orderItemsPrice);
             int rewardPoint = (int) ((orderItemsPrice - usedCouponPrice - usedPoint) * REWARD_POINT_RATE);
             useCouponAndPoint(orderItemsPrice, paymentId, memberCouponId, usedPoint, memberId, usedCouponPrice, rewardPoint, requests);
 
-            throw new RuntimeException("서버 down");
-
-            /*
             saveOrderTx(orderItemsPrice, paymentId, memberId, null, receiverNickname, receiverPhone, zipCode, streetAddress, detailAddress
                     , message, memberCouponId, usedPoint, orderItems, usedCouponPrice, requests, rewardPoint);
-            */
+
             //포인트 적립 X (무료 주문이라)
 
         } catch (Exception e) {
@@ -202,7 +200,7 @@ public class OrderService {
             //재고 롤백
             increaseStock(paymentId, requests);
             //쿠폰, 포인트 롤백
-            rollbackCouponAndPoint(paymentId, memberId, memberCouponId, usedPoint, rewardPoint, requests);
+            rollbackCouponAndPointAndStock(paymentId, memberId, memberCouponId, usedPoint, rewardPoint, requests);
         }
     }
 
@@ -226,13 +224,17 @@ public class OrderService {
             }
         } catch (RefusedDiscountException e) {
             //정상적인 실패로 쿠폰 안 사용한 상태
+            increaseStock(paymentId, requests);
             throw e;
+        } catch (CallNotPermittedException e){
+            increaseStock(paymentId, requests);
+            throw new CustomCallNotPermittedException();
         } catch (Exception e) {
-            rollbackCouponAndPoint(paymentId, memberId, memberCouponId, usedPoint, rewardPoint, requests);
+            rollbackCouponAndPointAndStock(paymentId, memberId, memberCouponId, usedPoint, rewardPoint, requests);
         }
     }
 
-    private void rollbackCouponAndPoint(String paymentId, Long memberId, Long memberCouponId, Integer usedPoint, int rewardPoint, List<ItemOrderCountRequest> requests) {
+    private void rollbackCouponAndPointAndStock(String paymentId, Long memberId, Long memberCouponId, Integer usedPoint, int rewardPoint, List<ItemOrderCountRequest> requests) {
         RollbackCouponAndPointEvent event = new RollbackCouponAndPointEvent(paymentId, memberId, memberCouponId, usedPoint, rewardPoint);
         //server down or 1회성 네트워크 이슈 or 타임아웃 등 모든 케이스는 재고 차감은 되고 응답만 실패했을 가능성 있음
         String failMessage = "회원 서버에 에러가 발생했습니다";
@@ -241,11 +243,16 @@ public class OrderService {
             if (!memberFeignClient.existDiscountLog(paymentId)) {
                 increaseStock(paymentId, requests);
                 memberEventProducer.produceDelayRollbackCouponAndPointEvent(event);
-                throw new RuntimeException(failMessage);
+                throw new NotExistLogException(failMessage);
             }
         } catch (Exception e) {
-            //재시도 실패시 지연 이벤트 발행 & 주문 취소를 위해 예외 던지기
+            //지연 이벤트 중복 발행 방지
+            if(e instanceof NotExistLogException) throw e;
+
+            //재시도 실패시 지연 이벤트 발행
             memberEventProducer.produceDelayRollbackCouponAndPointEvent(event);
+
+            //주문 취소를 위해 예외 던지기
             throw new RuntimeException(failMessage, e);
         }
     }
@@ -255,30 +262,34 @@ public class OrderService {
             itemFeignClient.decreaseStocks(requests, paymentId);
         } catch (NotEnoughStockException e) {
             throw e;
+        } catch (CallNotPermittedException e){
+            throw new CustomCallNotPermittedException();
         } catch (Exception e) {
+            //server down or 1회성 네트워크 이슈 or 타임아웃의 경우 재고 차감은 됐지만 응답만 실패했을 가능성
             checkAndIncreaseStock(paymentId, requests);
         }
+
     }
 
     private void checkAndIncreaseStock(String paymentId, List<ItemOrderCountRequest> requests) {
         IncreaseStockEvent event = new IncreaseStockEvent(paymentId, requests);
-        //server down or 1회성 네트워크 이슈 or 타임아웃 등 모든 케이스는 재고 차감은 되고 응답만 실패했을 가능성 있음
         String failMessage = "상품 서버에 에러가 발생했습니다";
         try {
-            //타임아웃 케이스
-            //1. 처리 완료되고 타잉아웃 (조회 가능)
-            //2. 타임아웃 이후 처리완료 (조회 시점엔 없지만 나중에 저장되는)
-            // ㄴ롤백 이벤트 소비 시점에서도 아직 저장안됐을 가능성 (지연 이벤트로 발행해야함)
-            //3. 진짜 처리 못하고 서버 down (조회 불가)
-            //재고 로그 있으면 계속 로직 진행
+            //예외 케이스
+            //1. 처리 완료되고 응답 실패 (조회 가능, 재고 로그 있으면 계속 로직 진행)
+            //2. 타임아웃 후 처리완료 (조회 시점엔 없지만 나중에 저장될 수도 있어서 지연 이벤트로 발행해야함)
+            //3. 처리 못하고 응답 실패 (데이터도 없고, api 호출도 불가)
             if (!itemFeignClient.existDecreaseStockLog(paymentId)) {
                 itemEventProducer.produceDelayIncreaseStockEvent(event);
-                throw new RuntimeException(failMessage);
+                throw new NotExistLogException(failMessage);
             }
         } catch (Exception e) {
-            //재시도 실패시 지연 이벤트 발행 & 주문 취소를 위해 예외 던지기
+            //지연 이벤트 중복 발행 방지
+            if(e instanceof NotExistLogException) throw e;
+
+            //타임 아웃 or 1회성 네트워크 이슈 or 서버 down
             itemEventProducer.produceDelayIncreaseStockEvent(event);
-            //런타임 예외 두번 감싸지는거 예방
+            //주문 취소를 위해 예외 던지기 & 런타임 예외 두번 감싸지는거 예방
             throw new RuntimeException(failMessage, e);
         }
     }
@@ -288,82 +299,77 @@ public class OrderService {
     //어짜피 pdl 패턴이라 예외 안 던지긴하지만
     private void increaseStock(String paymentId, List<ItemOrderCountRequest> requests) {
         IncreaseStockEvent event = new IncreaseStockEvent(paymentId, requests);
-        //server down or 1회성 네트워크 이슈 or 타임아웃 등 모든 케이스는 재고 차감은 되고 응답만 실패했을 가능성 있음
         try {
             if (itemFeignClient.existDecreaseStockLog(paymentId))
                 itemEventProducer.produceIncreaseStockEvent(event);
-            else
+            else {
+                //타임아웃 때문에 뒤늦게 저장되는 경우 대비
                 itemEventProducer.produceDelayIncreaseStockEvent(event);
+            }
         } catch (Exception e) {
-            //타임아웃 때문에 뒤늦게 저장되는 경우 대비
             itemEventProducer.produceDelayIncreaseStockEvent(event);
         }
     }
 
-    public void cancelGuestOrder(Long orderId, String reason) {
+
+    //환불 확정
+    public void refundOrder(boolean isFreeOrder, Long orderId, String reason) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_ORDER));
-        OrderStatus status = order.getStatus();
-        //나머지 케이스는 취소 불가
-        if (!(status == OrderStatus.ORDER_RECEIVED || status == OrderStatus.DELIVERED)) {
-            String message = "주문 취소 가능 단계가 아닙니다.";
-            log.warn(message);
-            throw new IllegalArgumentException(message);
-        }
 
-        order.cancelOrder();
-        portOneService.cancelPayment(order.getPaymentId(), reason);
+        OrderStatus status = order.getStatus();
+        if (!(status == OrderStatus.ORDER_RECEIVED || status == OrderStatus.DELIVERED || status == OrderStatus.CANCEL_RECEIVED))
+            throw new IllegalArgumentException("주문 취소 확정 가능 단계가 아닙니다");
+
+        if(!isFreeOrder)
+            portOneService.cancelPayment(order.getPaymentId(), reason);
+        orderTxService.updateOrderStatusAndSaveOutBox(orderId, OrderStatus.REFUNDED);
     }
 
-    public void cancelMemberOrder(Long orderId, Long memberId, String bearerJwt, String reason) {
+
+    public void receiveCancelGuestOrder(Long orderId, Long memberId, String buyerName, String reason) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_ORDER));
 
-        boolean isOwner = order.getMemberId().equals(memberId);
-        Authority authority = memberFeignClient.findAuthority(bearerJwt);
+        boolean isBuyer = order.getGuest().getNickname().equals(buyerName);
+        String errorMsg = "주문한 고객이 아닙니다";
 
-        if (!authority.equals(Authority.ADMIN) && !isOwner) {
-            String message = "주문한 사용자가 아닙니다.";
-            log.warn(message);
-            throw new IllegalArgumentException(message);
+        if (!isBuyer) {
+            if (memberId == null)
+                throw new IllegalArgumentException(errorMsg);
+
+            Authority authority = memberFeignClient.findAuthority(memberId);
+
+            //관리자가 api 호출하면 jwt 첨부되서
+            if (!authority.equals(Authority.ADMIN))
+                throw new IllegalArgumentException(errorMsg);
         }
 
-        OrderStatus status = order.getStatus();
+        validateCancelPossibleLevel(order.getStatus());
+        orderTxService.updateOrderStatusAndSaveOutBox(orderId, OrderStatus.CANCEL_RECEIVED);
+    }
+
+    public void receiveCancelMemberOrder(Long orderId, Long memberId, String reason) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_ORDER));
+
+        boolean isBuyer = order.getMemberId().equals(memberId);
+        Authority authority = memberFeignClient.findAuthority(memberId);
+
+        if (!authority.equals(Authority.ADMIN) && !isBuyer)
+            throw new IllegalArgumentException("주문한 사용자가 아닙니다");
+
         //나머지 케이스는 취소 불가 (운영자여도 마찬가지)
-        if (!(status == OrderStatus.ORDER_RECEIVED || status == OrderStatus.DELIVERED)) {
-            String message = "주문 취소 가능 단계가 아닙니다.";
-            log.warn(message);
-            throw new IllegalArgumentException(message);
-        }
-
-        order.cancelOrder();
+        validateCancelPossibleLevel(order.getStatus());
+        orderTxService.updateOrderStatusAndSaveOutBox(orderId, OrderStatus.CANCEL_RECEIVED);
     }
 
-    //payment == null 이면 freeOrder로 취급할수 있지만, 데이터 정합성이 안맞을 수도 있음
-    public void cancelMemberFreeOrder(Long orderId, Long memberId, String bearerJwt) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_ORDER));
+    private static void validateCancelPossibleLevel(OrderStatus status) {
+        //나머지 케이스는 취소 불가 (운영자여도 안 됨)
+        if (!(status == OrderStatus.ORDER_RECEIVED || status == OrderStatus.DELIVERED))
+            throw new IllegalArgumentException("주문 취소 가능 단계가 아닙니다.");
 
-        boolean isOwner = order.getMemberId().equals(memberId);
-        Authority authority = memberFeignClient.findAuthority(bearerJwt);
-
-        if (!authority.equals(Authority.ADMIN) && !isOwner) {
-            String message = "주문한 사용자가 아닙니다.";
-            log.warn(message);
-            throw new IllegalArgumentException(message);
-        }
-
-        OrderStatus status = order.getStatus();
-        //나머지 케이스는 취소 불가 (운영자여도 마찬가지)
-        if (!(status == OrderStatus.ORDER_RECEIVED || status == OrderStatus.DELIVERED)) {
-            String message = "주문 취소 가능 단계가 아닙니다.";
-            log.warn(message);
-            throw new IllegalArgumentException(message);
-        }
-
-        order.cancelOrder();
     }
-
 
     public int getShippingFee(int orderItemsPrice) {
         return orderItemsPrice > 40000 ? 0 : 3000;
@@ -373,10 +379,8 @@ public class OrderService {
         try {
             validateMemberId(memberId);
             validatePaymentId(order.getPaymentId());
-            List<ItemOrderCountRequest> requests = order.getOrderItems().stream().map(ItemOrderCountRequest::new).toList();
             validateMemberOrderPrice(orderItemsPrice, order.getMemberCouponId(), order.getUsedPoint(), clientTotal, memberId);
         } catch (Exception e) {
-            log.error(e.getMessage());
             //주문 취소안하고, DB 장애 해결되면, 관리자 페이지에서 로그 조회하여 주문 재등록하게 하는 방법도 있음
             portOneService.cancelPayment(order.getPaymentId(), e.getMessage());
             throw e;

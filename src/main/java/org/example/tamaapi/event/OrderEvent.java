@@ -4,14 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.tamaapi.domain.EventType;
-import org.example.tamaapi.domain.order.OrderStatus;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderCreatedEvent {
+public class OrderEvent {
 
-    private final EventType eventType = EventType.ORDER_CREATED;
+    private EventType eventType;
     private Long orderId;
 
 }

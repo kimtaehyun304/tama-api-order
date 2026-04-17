@@ -14,8 +14,7 @@ import org.example.tamaapi.dto.PortOneOrder;
 import org.example.tamaapi.dto.feign.UsedCouponAndPointRequest;
 import org.example.tamaapi.dto.requestDto.order.PortOneOrderItem;
 import org.example.tamaapi.event.ItemEventProducer;
-import org.example.tamaapi.event.OrderCreatedEvent;
-import org.example.tamaapi.event.OrderEventProducer;
+
 import org.example.tamaapi.feignClient.item.ItemFeignClient;
 import org.example.tamaapi.feignClient.item.ItemOrderCountRequest;
 import org.example.tamaapi.feignClient.item.ItemPriceResponse;
@@ -49,7 +48,6 @@ public class OrderTxService {
     private final JdbcTemplate jdbcTemplate;
 
     private final ItemFeignClient itemFeignClient;
-    private final OrderEventProducer orderEventProducer;
 
 
     @Value("${portOne.secret}")
@@ -77,7 +75,7 @@ public class OrderTxService {
         orderRepository.save(order);
         saveOrderItems(orderItems);
         //아웃박스 패턴은 공통 db 동기화를 위해 사용
-        outboxRepository.save(new Outbox(order.getId(), EventType.ORDER_CREATED));
+        outboxRepository.save(new Outbox(order.getId(), EventType.ORDER_RECEIVED));
         return order.getId();
     }
 
@@ -97,7 +95,6 @@ public class OrderTxService {
             }
         });
     }
-
 
     //saveOrder 공통 로직
     //재고 감소는 이벤트 item msa에서
@@ -125,5 +122,11 @@ public class OrderTxService {
         return orderItems;
     }
 
+    public void updateOrderStatusAndSaveOutBox(Long orderId, OrderStatus status) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_ORDER));
+        order.updateStatus(status);
+        outboxRepository.save(new Outbox(orderId, EventType.valueOf(status.name())));
+    }
 
 }

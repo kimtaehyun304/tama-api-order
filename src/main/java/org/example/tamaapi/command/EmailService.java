@@ -19,7 +19,6 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
 
-
     @Async("emailExecutor")
     @Retryable(backoff = @Backoff(delay = 3000, multiplier = 2), recover = "recover")
     //aop라 public

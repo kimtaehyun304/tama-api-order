@@ -37,11 +37,6 @@ public class Outbox extends BaseEntity {
     @Column(nullable = false)
     private OutboxStatus status;
 
-    public Outbox(JsonNode payload, EventType eventType) {
-        this.payload = payload;
-        this.eventType = eventType;
-        this.status = OutboxStatus.PENDING;
-    }
 
     public Outbox(Long aggregateId, EventType eventType) {
         this.aggregateId = aggregateId;

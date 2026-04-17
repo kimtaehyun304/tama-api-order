@@ -14,7 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 public class IncreaseStockEvent {
 
-    private final EventType eventType = EventType.INCREASE_STOCK;
+    //또다른 주문 관련한 상품 이벤트 발행 계획은 없어서 ItemEvent로 안 함
+
     private String paymentId;
     private List<ItemOrderCountRequest> requests;
 

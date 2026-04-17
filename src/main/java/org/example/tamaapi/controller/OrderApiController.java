@@ -41,7 +41,7 @@ public class OrderApiController {
     private final PortOneService portOneService;
     private final EmailService emailService;
     private final ItemFeignClient itemFeignClient;
-
+    private final OrderEventProducer orderEventProducer;
 
     @PostMapping("/api/orders/member")
     public ResponseEntity<SimpleResponse> saveMemberOrder(@RequestParam String paymentId, @AuthenticationPrincipal Long memberId) {
@@ -128,27 +128,19 @@ public class OrderApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new SimpleResponse("결제 완료"));
     }
 
-    //멤버 주문 취소
-    @PutMapping("/api/orders/member/cancel")
-    public ResponseEntity<SimpleResponse> cancelMemberOrder(@Valid @RequestBody CancelMemberOrderRequest cancelMemberOrderRequest, @AuthenticationPrincipal CustomPrincipal principal) {
-        if (principal == null)
+    //멤버 주문 취소 접수
+    @PutMapping("/api/orders/member/cancel/received")
+    public ResponseEntity<SimpleResponse> cancelReceivedMemberOrder(@Valid @RequestBody CancelMemberOrderRequest req, @AuthenticationPrincipal Long memberId) {
+        if (memberId == null)
             throw new MyBadRequestException("액세스 토큰이 비었습니다.");
 
-        Long orderId = cancelMemberOrderRequest.getOrderId();
-        Long memberId = principal.getMemberId();
-
-        //사용자가 주문 취소 사유를 입력하도록 변경 필요
-        if(cancelMemberOrderRequest.getIsFreeOrder())
-            orderService.cancelMemberFreeOrder(orderId, memberId, principal.getBearerJwt());
-        else
-            orderService.cancelMemberOrder(orderId, memberId, principal.getBearerJwt(), "구매자 취소 요청");
-
+        orderService.receiveCancelMemberOrder(req.getOrderId(), memberId, req.getReason());
         return ResponseEntity.status(HttpStatus.OK).body(new SimpleResponse("주문 취소 접수 완료"));
     }
 
-    //게스트 주문 취소
-    @PutMapping("/api/orders/guest/cancel")
-    public ResponseEntity<SimpleResponse> cancelGuestOrder(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
+    //게스트 주문 취소 접수
+    @PutMapping("/api/orders/guest/cancel/received")
+    public ResponseEntity<SimpleResponse> cancelReceivedGuestOrder(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader, @AuthenticationPrincipal Long memberId) {
         // "Basic YWRtaW46cGFzc3dvcmQ=" 형태 → Base64 디코딩
         if (authHeader == null || !authHeader.startsWith("Basic "))
             throw new IllegalArgumentException(INVALID_HEADER);
@@ -164,14 +156,8 @@ public class OrderApiController {
         String buyerName = values[0];
         Long orderId = Long.parseLong(values[1]);
 
-        Order order = orderQueryRepository.findAllWithOrderItemAndDeliveryByOrderId(orderId)
-                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_ORDER));
-        //사용자 검증
-        if (!order.getGuest().getNickname().equals(buyerName))
-            throw new IllegalArgumentException(NOT_FOUND_ORDER);
-
-        orderService.cancelGuestOrder(orderId, "구매자 취소 요청");
-        return ResponseEntity.status(HttpStatus.OK).body(new SimpleResponse("결제 취소 완료"));
+        orderService.receiveCancelGuestOrder(orderId, memberId,  buyerName, "구매자 취소 요청");
+        return ResponseEntity.status(HttpStatus.OK).body(new SimpleResponse("주문 취소 접수 완료"));
     }
 
     //localhost는 webhook 못씀
