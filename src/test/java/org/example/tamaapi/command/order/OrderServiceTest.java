@@ -38,7 +38,7 @@ class OrderServiceTest {
         CountDownLatch latch = new CountDownLatch(threadCount);
 
 
-        String url = "http://localhost:" + 5002 + "/api/orders/free/member";
+        String url = "http://localhost:" + 80 + "/api/orders/free/member";
 
         String body = """
     {

@@ -30,6 +30,7 @@ public class ItemEventProducer {
     private final ObjectMapper objectMapper;
     private final KafkaTemplate<String, IncreaseStockEvent> kafkaTemplate;
     private final String ITEM_TOPIC = "item_topic";
+    private final String ITEM_DELAY_TOPIC = "item_delay_topic";
     long DELAY_MILLS = 1000 * 30;
 
     /*
@@ -68,7 +69,8 @@ public class ItemEventProducer {
             //동기로해야 try-catch 가능
             kafkaTemplate.send(ITEM_TOPIC, event).get();
         } catch (Exception e){
-            log.error("카프카 발송 실패. 이유={}",e.getMessage());
+            log.error("[ITEM_TOPIC 발행 실패] 지연 이벤트 발행 {}", e.getMessage());
+            kafkaTemplate.send(ITEM_DELAY_TOPIC, event);
         }
     }
 
@@ -85,12 +87,10 @@ public class ItemEventProducer {
                     .setHeader(KafkaHeaders.TOPIC, "item_delay_topic")
                     .setHeader("x-execute-at", executeAtByte)
                     .build();
-
-            // 동기 발송(테스트/특수 케이스용). 운영에서는 주의 필요
             kafkaTemplate.send(message).get();
         } catch (Exception e) {
-            log.error("카프카 발송 실패. 이유={}", e.getMessage(), e);
-            // 필요 시 재시도/알림 로직 추가
+            //로그 모니터링 구축하도 클릭해서 이벤트 발행하게 해야함 (producer dead letter 대체)
+            log.error("[ITEM_DELAY_TOPIC 발행 실패] {}", e.getMessage());
         }
     }
 

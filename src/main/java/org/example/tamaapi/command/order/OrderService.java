@@ -157,7 +157,6 @@ public class OrderService {
                     , message, memberCouponId, usedPoint, orderItems, usedCouponPrice, requests, rewardPoint);
 
             //포인트 적립 X (무료 주문이라)
-
         } catch (Exception e) {
             String failMessage = String.format("주문을 실패했습니다. %s", e.getMessage());
             throw new RuntimeException(failMessage);
@@ -210,7 +209,6 @@ public class OrderService {
             return orderTxService.saveOrder(paymentId, null, guest, receiverNickname, receiverPhone,
                     zipCode, streetAddress, detailAddress, message, getShippingFee(orderItemsPrice), null, 0, 0, orderItems);
         } catch (Exception e) {
-            //재고 롤백
             increaseStock(paymentId, requests);
             throw e;
         }
@@ -236,7 +234,7 @@ public class OrderService {
 
     private void rollbackCouponAndPointAndStock(String paymentId, Long memberId, Long memberCouponId, Integer usedPoint, int rewardPoint, List<ItemOrderCountRequest> requests) {
         RollbackCouponAndPointEvent event = new RollbackCouponAndPointEvent(paymentId, memberId, memberCouponId, usedPoint, rewardPoint);
-        //server down or 1회성 네트워크 이슈 or 타임아웃 등 모든 케이스는 재고 차감은 되고 응답만 실패했을 가능성 있음
+
         String failMessage = "회원 서버에 에러가 발생했습니다";
         try {
             //할인 로그있으면 다음 로직 진행

@@ -34,21 +34,40 @@ public class OrderEventProducer {
         //whenComplete + 일반 arraylist.add()는 동시성 이슈
         for (Outbox outbox : outboxes) {
             OrderEvent event = new OrderEvent(outbox.getEventType(), outbox.getAggregateId());
-            //비동기지만 한번에 모아서 전송하는 단일 쓰레드 방식
+
+            //send가 비동기 방식이라 CompletableFuture 사용
+            //1. CompletableFuture.allOf 실행시 카프카 send 시작
+            // send는 비동기 방식으로 요청을 내부 큐에 쌓는건지 즉시 발행하는 게 아님
+            //2. 프로듀서는 내부 큐에 쌓인 걸 모았다가 한번에 쏜다 (단일 쓰레드)
+            // [kafka-producer-network-thread | producer-1] * n 이렇게 로그 뜸
+            // 실제 전송은 단일 쓰레드지만, 한번에 모아서 보내므로, send 방식인 비동기로 빠르게 큐에 쌓는게 빠르다
             CompletableFuture<Long> future =
                     kafkaTemplate.send(ORDER_SYNC_TOPIC, event)
-                            .thenApply(result -> outbox.getId()) // 성공 → outBoxId 반환
-                            .exceptionally(ex -> {
-                                log.error("Kafka 발송 실패. outboxId={}, orderId={}, topic={}",
-                                        outbox.getId(), outbox.getAggregateId(), ORDER_SYNC_TOPIC);
-                                return null;
-                            });
+                            .whenComplete((result, ex) -> {
+                                if (ex != null) {
+                                    log.error("Kafka 발송 실패. outboxId={}, orderId={}, topic={}",
+                                            outbox.getId(), outbox.getAggregateId(), ORDER_SYNC_TOPIC, ex);
+                                } else {
+                                    /* 실험하려고 else 썼음
+                                    log.info("Kafka 발송 성공. outboxId={}, partition={}, offset={}",
+                                            outbox.getId(),
+                                            result.getRecordMetadata().partition(),
+                                            result.getRecordMetadata().offset());
+
+                                     */
+                                }
+                            })
+                            .thenApply(result -> outbox.getId());
 
             futures.add(future);
         }
 
+        System.out.println("발송 시작!");
+
         // 모든 Kafka 전송 완료 대기
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        System.out.println("발송 끝!");
 
         // 성공한 것만 반환
         return futures.stream()

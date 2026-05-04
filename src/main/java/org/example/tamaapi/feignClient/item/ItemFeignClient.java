@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "item-service", url = "http://localhost:5003"
+//k8s로 바꾸면서 url 옵션 생략
+@FeignClient(name = "item-service"
         , configuration = ItemFeignClientConfig.class
         , fallbackFactory = ItemFallbackFactory.class)
 public interface ItemFeignClient {
