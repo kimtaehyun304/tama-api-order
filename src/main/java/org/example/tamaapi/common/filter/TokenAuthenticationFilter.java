@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.tamaapi.common.auth.jwt.TokenProvider;
-import org.example.tamaapi.dto.responseDto.SimpleResponse;
+import org.example.tamaapi.common.dto.SimpleResponse;
 import org.springframework.data.util.Pair;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

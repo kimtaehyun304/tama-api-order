@@ -2,18 +2,11 @@ package org.example.tamaapi.event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.tamaapi.common.util.ThreadUtil;
-import org.example.tamaapi.domain.EventType;
-import org.example.tamaapi.domain.order.OrderStatus;
 import org.example.tamaapi.domain.outbox.Outbox;
-import org.example.tamaapi.feignClient.item.ItemOrderCountRequest;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -22,7 +15,6 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 @Slf4j
 public class OrderEventProducer {
-    private final ThreadUtil threadUtil;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     //카프카는 토픽에 온 메시지를 읽는거라, 다른 이벤트여도 컨슈머가 읽을 수있어서, 다른 토픽 사용
@@ -62,7 +54,6 @@ public class OrderEventProducer {
             futures.add(future);
         }
 
-        System.out.println("발송 시작!");
 
         // 모든 Kafka 전송 완료 대기
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();

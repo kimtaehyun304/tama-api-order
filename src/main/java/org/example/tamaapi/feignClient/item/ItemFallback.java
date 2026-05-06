@@ -1,10 +1,8 @@
 package org.example.tamaapi.feignClient.item;
 
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 
-import static org.example.tamaapi.common.exception.CommonExceptionHandler.throwOriginalException;
+import static org.example.tamaapi.exception.CommonExceptionHandler.throwOriginalException;
 
 
 public class ItemFallback implements ItemFeignClient{

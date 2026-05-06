@@ -1,6 +1,5 @@
 package org.example.tamaapi.feignClient.member;
 
-import org.example.tamaapi.common.exception.feign.MemberFeignClientConfig;
 import org.example.tamaapi.dto.feign.UsedCouponAndPointRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;

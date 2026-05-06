@@ -1,24 +1,18 @@
 package org.example.tamaapi.scheduler;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.example.tamaapi.command.OutboxRepository;
 import org.example.tamaapi.command.order.OutboxService;
-import org.example.tamaapi.common.util.ThreadUtil;
-import org.example.tamaapi.domain.EventType;
 import org.example.tamaapi.domain.outbox.Outbox;
 import org.example.tamaapi.domain.outbox.OutboxStatus;
-import org.example.tamaapi.event.ItemEventProducer;
 import org.example.tamaapi.event.OrderEventProducer;
 import org.example.tamaapi.feignClient.item.ItemFeignClient;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 

@@ -1,9 +1,8 @@
 package org.example.tamaapi.feignClient.member;
 
 import org.example.tamaapi.dto.feign.UsedCouponAndPointRequest;
-import org.springframework.stereotype.Component;
 
-import static org.example.tamaapi.common.exception.CommonExceptionHandler.throwOriginalException;
+import static org.example.tamaapi.exception.CommonExceptionHandler.throwOriginalException;
 
 public class MemberFallback implements MemberFeignClient{
 
@@ -29,7 +28,6 @@ public class MemberFallback implements MemberFeignClient{
         throwOriginalException(cause);
         return null;
     }
-
 
     @Override
     public void validateCoupon(Long memberCouponId) {

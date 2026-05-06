@@ -1,27 +1,14 @@
 package org.example.tamaapi.command.order;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tamaapi.command.OutboxRepository;
-import org.example.tamaapi.command.PortOneService;
-import org.example.tamaapi.common.exception.UsedPaymentIdException;
-import org.example.tamaapi.common.exception.feign.MemberFeignCommandException;
 import org.example.tamaapi.domain.EventType;
 import org.example.tamaapi.domain.order.*;
 import org.example.tamaapi.domain.outbox.Outbox;
-import org.example.tamaapi.dto.PortOneOrder;
-import org.example.tamaapi.dto.feign.UsedCouponAndPointRequest;
 import org.example.tamaapi.dto.requestDto.order.PortOneOrderItem;
-import org.example.tamaapi.event.ItemEventProducer;
-
 import org.example.tamaapi.feignClient.item.ItemFeignClient;
-import org.example.tamaapi.feignClient.item.ItemOrderCountRequest;
 import org.example.tamaapi.feignClient.item.ItemPriceResponse;
-import org.example.tamaapi.feignClient.member.Authority;
-import org.example.tamaapi.feignClient.member.MemberFeignClient;
-import org.example.tamaapi.query.order.OrderQueryRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -34,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.example.tamaapi.common.util.ErrorMessageUtil.NOT_FOUND_ORDER;
+import static org.example.tamaapi.exception.ErrorMessageUtil.NOT_FOUND_ORDER;
 
 @Service
 @RequiredArgsConstructor
@@ -46,16 +33,7 @@ public class OrderTxService {
     private final OrderRepository orderRepository;
     private final OutboxRepository outboxRepository;
     private final JdbcTemplate jdbcTemplate;
-
     private final ItemFeignClient itemFeignClient;
-
-
-    @Value("${portOne.secret}")
-    private String PORT_ONE_SECRET;
-
-    public static Double REWARD_POINT_RATE = 0.005;
-
-    //saveOrderItems만 실패할 수 있어서 트랜잭션 묶음
 
     public Long saveOrder(String paymentId, Long memberId,
                            Guest guest, String receiverNickname,

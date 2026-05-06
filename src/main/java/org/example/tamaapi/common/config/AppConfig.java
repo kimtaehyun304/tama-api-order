@@ -6,16 +6,11 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import feign.FeignException;
-import feign.RequestInterceptor;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.tamaapi.common.exception.OrderFailException;
-import org.example.tamaapi.common.exception.feign.MemberFeignCommandException;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,10 +18,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestClient;
-
-import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -52,12 +44,14 @@ public class AppConfig {
     }
 
     //Response Json xss 방지
+    /*
     @Bean
     public MappingJackson2HttpMessageConverter jsonEscapeConverter() {
         ObjectMapper copy = objectMapper().copy();
         copy.getFactory().setCharacterEscapes(new HtmlCharacterEscapes());
         return new MappingJackson2HttpMessageConverter(copy);
     }
+    */
 
     @Bean
     public JPAQueryFactory jpaQueryFactory(EntityManager em){
@@ -94,6 +88,7 @@ public class AppConfig {
     }
      */
 
+    /*
     @Bean
     public ApplicationRunner circuitBreakerLogger(CircuitBreakerRegistry registry) {
         return args -> registry.getAllCircuitBreakers()
@@ -133,6 +128,7 @@ public class AppConfig {
                         )
                 );
     }
+    */
 
     @Bean
     public RestClient restClient(RestClient.Builder restClientBuilder) {

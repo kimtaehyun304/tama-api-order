@@ -3,18 +3,11 @@ package org.example.tamaapi.common.auth.jwt;
 
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
-import org.example.tamaapi.common.auth.CustomPrincipal;
-import org.example.tamaapi.common.exception.MyExpiredJwtException;
-import org.example.tamaapi.common.exception.OrderFailException;
 import org.springframework.data.util.Pair;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-
 import java.time.Duration;
-import java.util.Date;
-
-import static org.example.tamaapi.common.filter.TokenAuthenticationFilter.TOKEN_PREFIX;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +15,9 @@ public class TokenProvider {
 
     private final JwtProperties jwtProperties;
 
-    public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
-    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
-    public static final Duration ACCESS_TOKEN_DURATION = Duration.ofDays(1);
+    //public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
+    //public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
+    //public static final Duration ACCESS_TOKEN_DURATION = Duration.ofDays(1);
 
     public Pair<Boolean, String> validateToken(String token) {
         try {
@@ -50,11 +43,10 @@ public class TokenProvider {
             //return new UsernamePasswordAuthenticationToken(customPrincipal, token);
             return new UsernamePasswordAuthenticationToken(memberId, null);
         } catch (Exception e){
-            throw new OrderFailException("memberId 누락");
+            throw new RuntimeException("memberId 누락");
         }
 
     }
-
 
     private Claims getClaims(String token) {
         return Jwts.parser()

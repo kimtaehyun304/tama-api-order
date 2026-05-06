@@ -5,9 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-
-
-import org.example.tamaapi.common.exception.UnauthorizedException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,7 +25,7 @@ public class InternalOnlyAspect {
 
         if (!isPrivateIp(clientIp)) {
             //log.warn("[외부 접근 차단] IP = {}", clientIp);
-            throw new UnauthorizedException("사설망에서만 호출 가능한 내부 전용 API입니다.");
+            throw new RuntimeException("사설망에서만 호출 가능한 내부 전용 API입니다.");
             //NOT FOUND로 아에 없는 척하는 게 더 안전
         }
 

@@ -6,15 +6,14 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tamaapi.command.OutboxRepository;
-import org.example.tamaapi.common.exception.feign.CustomCallNotPermittedException;
-import org.example.tamaapi.common.exception.feign.NotExistLogException;
-import org.example.tamaapi.common.exception.feign.RefusedDiscountException;
-import org.example.tamaapi.common.exception.feign.NotEnoughStockException;
+import org.example.tamaapi.common.exception.CustomCallNotPermittedException;
+import org.example.tamaapi.exception.NotExistLogException;
+import org.example.tamaapi.exception.RefusedDiscountException;
+import org.example.tamaapi.exception.NotEnoughStockException;
 import org.example.tamaapi.domain.order.*;
 import org.example.tamaapi.dto.PortOneOrder;
 import org.example.tamaapi.dto.feign.UsedCouponAndPointRequest;
 import org.example.tamaapi.dto.requestDto.order.PortOneOrderItem;
-import org.example.tamaapi.common.exception.UsedPaymentIdException;
 import org.example.tamaapi.event.*;
 import org.example.tamaapi.feignClient.item.ItemFeignClient;
 import org.example.tamaapi.feignClient.item.ItemOrderCountRequest;
@@ -26,7 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static org.example.tamaapi.common.util.ErrorMessageUtil.*;
+import static org.example.tamaapi.exception.ErrorMessageUtil.*;
 
 @Service
 @RequiredArgsConstructor
@@ -443,7 +442,7 @@ public class OrderService {
     private void validatePaymentId(String paymentId) {
         orderQueryRepository.findByPaymentId(paymentId)
                 .ifPresent(order -> {
-                    throw new UsedPaymentIdException();
+                    throw new IllegalArgumentException("이미 사용된 결제 번호입니다");
                 });
     }
 

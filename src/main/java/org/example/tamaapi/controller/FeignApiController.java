@@ -1,36 +1,20 @@
 package org.example.tamaapi.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.tamaapi.command.EmailService;
-import org.example.tamaapi.command.PortOneService;
-import org.example.tamaapi.command.order.OrderService;
 import org.example.tamaapi.common.aspect.InternalOnly;
-import org.example.tamaapi.common.auth.CustomPrincipal;
-import org.example.tamaapi.common.util.ErrorMessageUtil;
+import org.example.tamaapi.exception.ErrorMessageUtil;
 import org.example.tamaapi.domain.order.Order;
 import org.example.tamaapi.domain.order.OrderItem;
-import org.example.tamaapi.domain.order.PortOnePaymentStatus;
-import org.example.tamaapi.dto.PortOneOrder;
 import org.example.tamaapi.dto.feign.FullOrderResponse;
 import org.example.tamaapi.dto.feign.ItemOrderCountResponse;
-import org.example.tamaapi.dto.requestDto.order.OrderDetailRequest;
-import org.example.tamaapi.dto.requestDto.order.FreeOrderRequest;
-import org.example.tamaapi.dto.responseDto.SimpleResponse;
-import org.example.tamaapi.feignClient.item.ItemFeignClient;
-import org.example.tamaapi.feignClient.item.ItemOrderCountRequest;
 import org.example.tamaapi.query.order.OrderItemQueryRepository;
 import org.example.tamaapi.query.order.OrderQueryRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Map;
 
-import static org.example.tamaapi.common.util.ErrorMessageUtil.NOT_FOUND_ORDER;
-import static org.example.tamaapi.common.util.ErrorMessageUtil.NOT_FOUND_ORDER_ITEM;
+import static org.example.tamaapi.exception.ErrorMessageUtil.NOT_FOUND_ORDER_ITEM;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,12 +25,12 @@ public class FeignApiController {
     private final OrderQueryRepository orderQueryRepository;
 
     @GetMapping("/api/orders/{orderId}/item")
-    public List<ItemOrderCountResponse> getOrderItems(@PathVariable Long orderId, @AuthenticationPrincipal CustomPrincipal principal) {
+    public List<ItemOrderCountResponse> getOrderItems(@PathVariable Long orderId, @AuthenticationPrincipal Long memberId) {
         List<OrderItem> orderItems = orderItemQueryRepository.findAllWithOrderByOrderId(orderId);
 
         //본인 인증
-        Long memberId = orderItems.get(0).getOrder().getMemberId();
-        if(!memberId.equals(principal.getMemberId()))
+        Long orderMemberId = orderItems.get(0).getOrder().getMemberId();
+        if(!memberId.equals(orderMemberId))
             throw new AuthorizationDeniedException(ErrorMessageUtil.ACCESS_DENIED);
 
         List<ItemOrderCountResponse> itemOrderCountRespons = orderItems.stream().map(ItemOrderCountResponse::new).toList();

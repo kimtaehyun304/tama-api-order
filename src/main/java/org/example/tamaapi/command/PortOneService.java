@@ -6,8 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tamaapi.domain.order.PortOnePaymentStatus;
 import org.example.tamaapi.dto.PortOneOrder;
-import org.example.tamaapi.common.exception.OrderFailException;
-import org.example.tamaapi.common.exception.WillCancelPaymentException;
+import org.example.tamaapi.exception.WillCancelPaymentException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
@@ -90,7 +89,7 @@ public class PortOneService {
     //어짜피 결제 실패했기 때문에, 결제 취소 안해도 됨
     public void validatePaymentStatus(PortOnePaymentStatus paymentStatus) {
         if (!paymentStatus.equals(PortOnePaymentStatus.PAID))
-            throw new OrderFailException("결제가 완료되지 않아서 주문을 진행할 수 없습니다");
+            throw new RuntimeException("결제가 완료되지 않아서 주문을 진행할 수 없습니다");
     }
 
     private void validateNotBlank(PortOneOrder portOneOrder) {
@@ -103,14 +102,14 @@ public class PortOneService {
                 // String 빈 값 체크
                 //쿠폰은 안 사용해도 정상이라 검사 제외
                 if (!field.getName().equals("memberCouponId") &&  value == null || (value instanceof String && !StringUtils.hasText((String) value)))
-                    throw new OrderFailException(String.format("[%s] 값 누락", field.getName()));
+                    throw new RuntimeException(String.format("[%s] 값 누락", field.getName()));
 
                 // List 내부 검사
                 if (value instanceof List<?> list) {
                     for (int i = 0; i < list.size(); i++) {
                         Object element = list.get(i);
                         if (element == null) {
-                            throw new OrderFailException(String.format("[%s][%d] 값 누락", field.getName(), i));
+                            throw new RuntimeException(String.format("[%s][%d] 값 누락", field.getName(), i));
                         }
 
                         // element 필드 검사 (SaveOrderItemRequest)
@@ -119,7 +118,7 @@ public class PortOneService {
                             Object itemValue = itemField.get(element);
 
                             if (itemValue == null || (itemValue instanceof String && !StringUtils.hasText((String) itemValue))) {
-                                throw new OrderFailException(
+                                throw new RuntimeException(
                                         String.format("[%s][%d].%s 값 누락", field.getName(), i, itemField.getName())
                                 );
                             }

@@ -3,14 +3,11 @@ package org.example.tamaapi.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.tamaapi.common.auth.CustomPrincipal;
 import org.example.tamaapi.domain.order.PortOnePaymentStatus;
-import org.example.tamaapi.domain.order.Order;
 import org.example.tamaapi.dto.PortOneOrder;
-import org.example.tamaapi.dto.feign.ItemOrderCountRequestWrapper;
 import org.example.tamaapi.dto.requestDto.order.*;;
-import org.example.tamaapi.dto.responseDto.SimpleResponse;
-import org.example.tamaapi.common.exception.MyBadRequestException;
+import org.example.tamaapi.common.dto.SimpleResponse;
+import org.example.tamaapi.common.exception.CustomBadRequestException;
 import org.example.tamaapi.event.OrderEventProducer;
 import org.example.tamaapi.feignClient.item.ItemFeignClient;
 import org.example.tamaapi.feignClient.item.ItemOrderCountRequest;
@@ -29,7 +26,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
-import static org.example.tamaapi.common.util.ErrorMessageUtil.*;
+import static org.example.tamaapi.exception.ErrorMessageUtil.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -132,7 +129,7 @@ public class OrderApiController {
     @PutMapping("/api/orders/member/cancel/received")
     public ResponseEntity<SimpleResponse> cancelReceivedMemberOrder(@Valid @RequestBody CancelMemberOrderRequest req, @AuthenticationPrincipal Long memberId) {
         if (memberId == null)
-            throw new MyBadRequestException("액세스 토큰이 비었습니다.");
+            throw new CustomBadRequestException("액세스 토큰이 비었습니다.");
 
         orderService.receiveCancelMemberOrder(req.getOrderId(), memberId, req.getReason());
         return ResponseEntity.status(HttpStatus.OK).body(new SimpleResponse("주문 취소 접수 완료"));

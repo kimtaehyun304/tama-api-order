@@ -1,6 +1,5 @@
 package org.example.tamaapi.feignClient.item;
 
-import org.example.tamaapi.common.exception.feign.ItemFeignClientConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
