@@ -11,7 +11,7 @@ jobs:
 
     env:
       ECR_REGISTRY: 277707114689.dkr.ecr.ap-northeast-2.amazonaws.com
-      IMAGE_NAME: tama-api-order
+      IMAGE_NAME: tama-api/order
 
     steps:
       - name: Checkout
