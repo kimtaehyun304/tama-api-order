@@ -53,6 +53,7 @@ public class OrderTxService {
         saveOrderItems(orderItems);
         //아웃박스 패턴은 공통 db 동기화를 위해 사용
         outboxRepository.save(new Outbox(order.getId(), EventType.ORDER_RECEIVED));
+        log.info("주문 저장완료. orderId:{}",order.getId());
         return order.getId();
     }
 

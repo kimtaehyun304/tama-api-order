@@ -26,11 +26,6 @@ public class ItemFallback implements ItemFeignClient{
     }
 
     @Override
-    public void increaseStocks(List<ItemOrderCountRequest> requests) {
-        CommonExceptionHandler.throwOriginalException(cause);
-    }
-
-    @Override
     public void decreaseStocks(List<ItemOrderCountRequest> requests, String uuid) {
         CommonExceptionHandler.throwOriginalException(cause);
     }

@@ -126,7 +126,8 @@ public class OrderService {
             //아웃박스 폴링, 이벤트 발행,소비 진행 시간 고려하여 1.5초 쯤 대기해야함. 브라우저에서 대기해야 성능 문제 없음
         } catch (Exception e) {
             portOneService.cancelPayment(paymentId, e.getMessage());
-            String failMessage = "주문을 실패했습니다";
+            String failMessage = String.format("주문을 실패했습니다. %s", e.getMessage());
+            log.error(failMessage);
             throw new RuntimeException(failMessage);
             //주문은 자동 롤백
         }
@@ -134,6 +135,7 @@ public class OrderService {
 
     //결제 금액이 없어서 결제 취소할 일이 없어서 메서드 분리
     public void saveMemberFreeOrder(int orderItemsPrice,
+                                    String paymentId,
                                     Long memberId,
                                     String receiverNickname,
                                     String receiverPhone,
@@ -147,7 +149,6 @@ public class OrderService {
         try {
             List<ItemOrderCountRequest> requests = orderItems.stream().map(ItemOrderCountRequest::new).toList();
             //재고 감소
-            String paymentId = "free-order-" + UUID.randomUUID();
             decreaseStock(paymentId, requests);
 
             //쿠폰 포인트 사용
@@ -161,6 +162,7 @@ public class OrderService {
             //포인트 적립 X (무료 주문이라)
         } catch (Exception e) {
             String failMessage = String.format("주문을 실패했습니다. %s", e.getMessage());
+            log.error(failMessage);
             throw new RuntimeException(failMessage);
         }
     }
@@ -187,7 +189,8 @@ public class OrderService {
             return orderId;
         } catch (Exception e) {
             portOneService.cancelPayment(paymentId, e.getMessage());
-            String failMessage = "주문을 실패했습니다";
+            String failMessage = String.format("주문을 실패했습니다. %s", e.getMessage());
+            log.error(failMessage);
             throw new RuntimeException(failMessage);
         }
     }
@@ -381,6 +384,7 @@ public class OrderService {
             validatePaymentId(order.getPaymentId());
             validateMemberOrderPrice(orderItemsPrice, order.getMemberCouponId(), order.getUsedPoint(), clientTotal, memberId);
         } catch (Exception e) {
+            log.error("주문 검증 실패, msg = {}",e.getMessage());
             //주문 취소안하고, DB 장애 해결되면, 관리자 페이지에서 로그 조회하여 주문 재등록하게 하는 방법도 있음
             portOneService.cancelPayment(order.getPaymentId(), e.getMessage());
             throw e;

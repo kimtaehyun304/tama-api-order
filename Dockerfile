@@ -5,7 +5,7 @@ WORKDIR /build
 COPY . .
 
 RUN --mount=type=secret,id=gradle_properties,target=/home/gradle/.gradle/gradle.properties \
-    gradle clean build -x test
+    gradle build -x test
 
 
 # 2️⃣ 실행 단계

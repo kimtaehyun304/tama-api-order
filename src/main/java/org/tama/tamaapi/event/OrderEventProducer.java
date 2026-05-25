@@ -33,6 +33,7 @@ public class OrderEventProducer {
             //2. 프로듀서는 내부 큐에 쌓인 걸 모았다가 한번에 쏜다 (단일 쓰레드)
             // [kafka-producer-network-thread | producer-1] * n 이렇게 로그 뜸
             // 실제 전송은 단일 쓰레드지만, 한번에 모아서 보내므로, send 방식인 비동기로 빠르게 큐에 쌓는게 빠르다
+            // 모아둔걸 한번에 보내지만, 더 빨리 모을 수 있게 send() 쓰는게 좋음
             CompletableFuture<Long> future =
                     kafkaTemplate.send(ORDER_SYNC_TOPIC, event)
                             .whenComplete((result, ex) -> {

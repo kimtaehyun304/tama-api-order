@@ -33,6 +33,7 @@ public class DataBaseConfig {
         return DataSourceBuilder.create().type(HikariDataSource.class).build();
     }
 
+
     @Bean
     public List<DataSource> slaveDataSources() {
         List<DataSource> sources = new ArrayList<>();
@@ -53,6 +54,14 @@ public class DataBaseConfig {
         return sources;
     }
 
+    @Primary
+    @Bean
+    public DataSource dataSource() {
+        return masterDataSource();
+        //return new LazyConnectionDataSourceProxy(routingDataSource);
+    }
+
+    /*
     @Bean
     public DataSource routingDataSource(@Qualifier("masterDataSource") DataSource master,
                                         @Qualifier("slaveDataSources") List<DataSource> slaves) {
@@ -73,10 +82,13 @@ public class DataBaseConfig {
         return dataSource;
     }
 
+
     @Primary
     @Bean
     public DataSource dataSource(@Qualifier("routingDataSource") DataSource routingDataSource) {
-        return new LazyConnectionDataSourceProxy(routingDataSource);
+        return masterDataSource();
+        //return new LazyConnectionDataSourceProxy(routingDataSource);
     }
+    */
 
 }

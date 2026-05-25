@@ -41,6 +41,7 @@ public class CommonExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new SimpleResponse(exception.getMessage()));
     }
 
+
     // Column 'authority' cannot be null
     // unique 등
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -109,19 +110,26 @@ public class CommonExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new SimpleResponse(exception.getMessage()));
     }
 
+    //---로그 남기는 예외---
+
     //Resilience4j는 TimeoutException을 IllegalStateException로 래핑함
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<SimpleResponse> IllegalStateException(IllegalStateException exception) {
+        String message = "요청 시간을 초과했습니다. 다시 이용해주세요";
+        log.error(message);
         if (exception.getCause() instanceof TimeoutException)
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new SimpleResponse("요청 시간을 초과했습니다. 다시 이용해주세요"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new SimpleResponse(message));
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new SimpleResponse(exception.getMessage()));
     }
 
     @ExceptionHandler(CallNotPermittedException.class)
-    public ResponseEntity<SimpleResponse> CallNotPermittedException() {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new SimpleResponse("트래픽 과부하 상태입니다. 잠시 후에 이용해주세요"));
+    public ResponseEntity<SimpleResponse> CallNotPermittedException(CallNotPermittedException exception) {
+        log.error(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new SimpleResponse(exception.getMessage()));
     }
+
+
 
     /*
     @ExceptionHandler(NoFallbackAvailableException.class)

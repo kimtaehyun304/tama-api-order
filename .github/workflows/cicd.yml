@@ -1,64 +1,53 @@
+name: CICD
 
-#name: CICD
-#
-#on:
-#  push:
-#    branches: [master]  # master 브랜치에 푸시될 때 실행
-#    paths-ignore:
-#      - '**/README.md'
-#
-#jobs:
-#  build:
-#    runs-on: ubuntu-22.04
-#
-#    steps:
-#      - name: Checkout repository
-#        uses: actions/checkout@v3
-#
-#      - name: Create application.yml from secrets
-#        run: |
-#          touch ./src/main/resources/application.yml
-#          echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
-#          cat ./src/main/resources/application.yml
-#
-#      - name: Set up Java
-#        uses: actions/setup-java@v3
-#        with:
-#          distribution: 'zulu'
-#          java-version: '17'
-#
-#      - name: Grant execute permission for gradlew
-#        run: chmod +x gradlew
-#
-#      - name: Build with Gradle
-#        run: ./gradlew clean bootJar
-#
-#      - name: Get current time
-#        uses: josStorer/get-current-time@v2.0.2
-#        id: current-time
-#        with:
-#          format: YYYY-MM-DDTHH-mm-ss
-#          utcOffset: "+09:00"
-#
-#      - name: Generate deployment package
-#        run: |
-#          mkdir -p deploy
-#          cp build/libs/*.jar deploy/application.jar
-#          cp -r .platform deploy/.platform
-#          cp Dockerfile deploy
-#          cd deploy && zip -r deploy.zip .
-#
-#      - name: Set artifact path
-#        run: echo "artifact=deploy/deploy.zip" >> $GITHUB_ENV
-#
-#      - name: Beanstalk Deploy
-#        uses: einaregilsson/beanstalk-deploy@v20
-#        timeout-minutes: 2
-#        with:
-#          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          application_name: tama-api-3
-#          environment_name: Tama-api-3-env
-#          version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
-#          region: ap-northeast-2
-#          deployment_package: ${{ env.artifact }}
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      ECR_REGISTRY: 123456789.dkr.ecr.ap-northeast-2.amazonaws.com
+      IMAGE_NAME: tama-api-order
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Create gradle.properties
+        run: |
+          mkdir -p ~/.gradle
+          echo "${{ secrets.GRADLE_PROPERTIES }}" > ~/.gradle/gradle.properties
+
+      - name: Enable Docker BuildKit
+        run: |
+          echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            --secret id=gradle_properties,src=$HOME/.gradle/gradle.properties \
+            -t $IMAGE_NAME .
+
+      - name: Tag Docker image
+        run: |
+          docker tag $IMAGE_NAME:latest \
+          $ECR_REGISTRY/$IMAGE_NAME:${{ github.sha }}
+
+      - name: Push Docker image
+        run: |
+          docker push \
+          $ECR_REGISTRY/$IMAGE_NAME:${{ github.sha }}

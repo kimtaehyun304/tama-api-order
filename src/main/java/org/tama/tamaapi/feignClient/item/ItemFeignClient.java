@@ -17,8 +17,10 @@ public interface ItemFeignClient {
     @GetMapping("/api/items/price")
     List<ItemPriceResponse> getItemsPrice(@RequestParam List<Long> colorItemSizeStockIds);
 
+    /*
     @PutMapping("/api/items/stocks/increase")
     void increaseStocks(@RequestBody List<ItemOrderCountRequest> requests);
+     */
 
     //+테이블에 감소 로그 저장
     @PutMapping("/api/items/stocks/decrease")

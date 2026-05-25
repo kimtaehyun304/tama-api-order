@@ -26,14 +26,18 @@ public class FeignApiController {
     private final OrderQueryRepository orderQueryRepository;
 
     @GetMapping("/api/orders/{orderId}/item")
-    public List<ItemOrderCountResponse> getOrderItems(@PathVariable Long orderId, @AuthenticationPrincipal Long memberId) {
-        List<OrderItem> orderItems = orderItemQueryRepository.findAllWithOrderByOrderId(orderId);
+    public List<ItemOrderCountResponse> getOrderItems(@PathVariable Long orderId) {
+        //내부 api라 본인 인증 생략
+        /*
+        if(memberId == null)
+            throw new IllegalArgumentException("인증되지 않았습니다");
 
-        //본인 인증
         Long orderMemberId = orderItems.get(0).getOrder().getMemberId();
         if(!memberId.equals(orderMemberId))
             throw new AuthorizationDeniedException(ErrorMessageUtil.ACCESS_DENIED);
+         */
 
+        List<OrderItem> orderItems = orderItemQueryRepository.findAllWithOrderByOrderId(orderId);
         List<ItemOrderCountResponse> itemOrderCountRespons = orderItems.stream().map(ItemOrderCountResponse::new).toList();
         return itemOrderCountRespons;
     }
@@ -59,13 +63,13 @@ public class FeignApiController {
     }
     */
 
-    //카프카가 사용하는 API
+    //sql 조인용 msa가 사용
     @GetMapping("/api/orders/{orderId}/full")
     public FullOrderResponse getFullOrder(@PathVariable Long orderId) {
+        //내부 API라 본인 인증 생략
         Order order = orderQueryRepository.findFullByOrderId(orderId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessageUtil.NOT_FOUND_ORDER));
 
-        //내부 API라 본인 인증 생략 (할순 있는데 카프카에 JWT 담기엔 부하가 걱정되서 생략)
         return new FullOrderResponse(order);
     }
 

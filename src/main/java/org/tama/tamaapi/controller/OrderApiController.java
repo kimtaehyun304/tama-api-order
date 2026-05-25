@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,6 +44,7 @@ public class OrderApiController {
 
     @PostMapping("/api/orders/member")
     public ResponseEntity<SimpleResponse> saveMemberOrder(@RequestParam String paymentId, @AuthenticationPrincipal Long memberId) {
+        log.info("주문 컨트롤러 시작, paymentId = {}",paymentId);
         Map<String, Object> paymentResponse = portOneService.findByPaymentId(paymentId);
         PortOnePaymentStatus paymentStatus = PortOnePaymentStatus.valueOf((String) paymentResponse.get("status"));
         PortOneOrder portOneOrder = portOneService.convertCustomData((String) paymentResponse.get("customData"), paymentId);
@@ -75,11 +77,14 @@ public class OrderApiController {
     //포트원을 거치지 않음 -> 리다이렉트 X -> 모바일용 API 안 만듬
     @PostMapping("/api/orders/free/member")
     public ResponseEntity<SimpleResponse> saveMemberOrder(@RequestBody @Valid FreeOrderRequest req, @AuthenticationPrincipal Long memberId) {
+        String paymentId = "free-order-" + UUID.randomUUID();
+        log.info("주문 컨트롤러 시작, paymentId = {}",paymentId);
         List<ItemOrderCountRequest> requests = req.getOrderItems().stream().map(ItemOrderCountRequest::new).toList();
         int orderItemsPrice = itemFeignClient.getTotalPrice(requests);
         orderService.validateMemberFreeOrderPrice(orderItemsPrice, req.getMemberCouponId(), req.getUsedPoint(), memberId);
         orderService.saveMemberFreeOrder(
                 orderItemsPrice,
+                paymentId,
                 memberId,
                 req.getReceiverNickname(),
                 req.getReceiverPhone(),
@@ -99,6 +104,7 @@ public class OrderApiController {
     @PostMapping("/api/orders/guest")
     //@LogExecutionTime
     public ResponseEntity<SimpleResponse> saveGuestOrder(@RequestParam String paymentId) {
+        log.info("주문 컨트롤러 시작, paymentId = {}",paymentId);
         Map<String, Object> paymentResponse = portOneService.findByPaymentId(paymentId);
         PortOnePaymentStatus paymentStatus = PortOnePaymentStatus.valueOf((String) paymentResponse.get("status"));
         PortOneOrder portOneOrder = portOneService.convertCustomData((String) paymentResponse.get("customData"), paymentId);
