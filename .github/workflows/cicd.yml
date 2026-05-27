@@ -10,8 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      AWS_REGION: ap-northeast-2
       ECR_REGISTRY: 277707114689.dkr.ecr.ap-northeast-2.amazonaws.com
       IMAGE_NAME: tama-api/order
+      CLUSTER_NAME: tama-api-cluster
 
     steps:
       - name: Checkout
@@ -22,7 +24,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v2
@@ -42,12 +44,22 @@ jobs:
             --secret id=gradle_properties,src=$HOME/.gradle/gradle.properties \
             -t $IMAGE_NAME .
 
-      - name: Tag Docker image
+      - name: Tag SHA image
         run: |
           docker tag $IMAGE_NAME:latest \
           $ECR_REGISTRY/$IMAGE_NAME:${{ github.sha }}
 
-      - name: Push Docker image
+      - name: Tag latest image
+        run: |
+          docker tag $IMAGE_NAME:latest \
+          $ECR_REGISTRY/$IMAGE_NAME:latest
+
+      - name: Push SHA image
         run: |
           docker push \
           $ECR_REGISTRY/$IMAGE_NAME:${{ github.sha }}
+
+      - name: Push latest image
+        run: |
+          docker push \
+          $ECR_REGISTRY/$IMAGE_NAME:latest
