@@ -14,7 +14,6 @@ jobs:
       ECR_REGISTRY: 277707114689.dkr.ecr.ap-northeast-2.amazonaws.com
       IMAGE_NAME: tama-api/order
       CLUSTER_NAME: tama-api-cluster
-      IMAGE_FULL: ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
       DEPLOYMENT_NAME: order-service
       CONTAINER_NAME: order
       K8S_NAMESPACE: default
@@ -91,7 +90,9 @@ jobs:
           version: 'latest'
 
       - name: Set image on Deployment and rollout
-        id: deploy
+        #여기서 env 만들어야 에러 안남
+        env:
+          IMAGE_FULL: ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
         run: |
           echo "Updating deployment ${DEPLOYMENT_NAME} in namespace ${K8S_NAMESPACE} to image ${IMAGE_FULL}"
           kubectl -n ${K8S_NAMESPACE} set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${IMAGE_FULL} --record
