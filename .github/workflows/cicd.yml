@@ -35,10 +35,10 @@ jobs:
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Create application.yml
+      - name: Create application.yml from secrets
         run: |
-          mkdir -p ./src/main/resources
-          echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
+          mkdir -p src/main/resources
+          printf '%s' "${{ secrets.APPLICATION }}" > src/main/resources/application.yml
 
       - name: Create gradle.properties
         run: |
