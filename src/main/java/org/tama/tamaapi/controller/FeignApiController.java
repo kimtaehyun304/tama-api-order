@@ -25,6 +25,7 @@ public class FeignApiController {
     private final OrderItemQueryRepository orderItemQueryRepository;
     private final OrderQueryRepository orderQueryRepository;
 
+
     @GetMapping("/api/orders/{orderId}/item")
     public List<ItemOrderCountResponse> getOrderItems(@PathVariable Long orderId) {
         //내부 api라 본인 인증 생략
