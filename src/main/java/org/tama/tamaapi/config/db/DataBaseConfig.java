@@ -34,7 +34,7 @@ public class DataBaseConfig {
     }
 
 
-    @Bean
+    //@Bean
     public List<DataSource> slaveDataSources() {
         List<DataSource> sources = new ArrayList<>();
 
