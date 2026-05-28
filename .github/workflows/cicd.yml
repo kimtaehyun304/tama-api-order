@@ -73,16 +73,15 @@ jobs:
           docker push \
           $ECR_REGISTRY/$IMAGE_NAME:${{ github.sha }}
 
+      #이전 이미지의 latest 태그 사라지고, 새로운 이미지에만 붙음
       - name: Push latest image
         run: |
           docker push \
           $ECR_REGISTRY/$IMAGE_NAME:latest
           
       - name: Configure kubectl (use aws eks update-kubeconfig)
-        # EKS라면 aws eks update-kubeconfig로 kubeconfig를 생성/갱신하는 것을 권장합니다.
         run: |
           aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
-        # 위 명령은 aws-actions/configure-aws-credentials에서 설정한 자격증명을 사용합니다.
 
       - name: Install kubectl
         uses: azure/setup-kubectl@v3
@@ -95,5 +94,5 @@ jobs:
           IMAGE_FULL: ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
         run: |
           echo "Updating deployment ${DEPLOYMENT_NAME} in namespace ${K8S_NAMESPACE} to image ${IMAGE_FULL}"
-          kubectl -n ${K8S_NAMESPACE} set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${IMAGE_FULL} --record
+          kubectl -n ${K8S_NAMESPACE} set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${IMAGE_FULL}
           kubectl -n ${K8S_NAMESPACE} rollout status deployment/${DEPLOYMENT_NAME} --timeout=600s
