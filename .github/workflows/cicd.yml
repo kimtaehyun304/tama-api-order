@@ -78,21 +78,3 @@ jobs:
         run: |
           docker push \
           $ECR_REGISTRY/$IMAGE_NAME:latest
-          
-      - name: Configure kubectl (use aws eks update-kubeconfig)
-        run: |
-          aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
-
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'latest'
-
-      - name: Set image on Deployment and rollout
-        #여기서 env 만들어야 에러 안남
-        env:
-          IMAGE_FULL: ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-        run: |
-          echo "Updating deployment ${DEPLOYMENT_NAME} in namespace ${K8S_NAMESPACE} to image ${IMAGE_FULL}"
-          kubectl -n ${K8S_NAMESPACE} set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${IMAGE_FULL}
-          kubectl -n ${K8S_NAMESPACE} rollout status deployment/${DEPLOYMENT_NAME} --timeout=600s
