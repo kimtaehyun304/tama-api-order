@@ -33,7 +33,6 @@ import java.util.Map;
 @Slf4j
 public class HealthCheckApiController {
 
-
     @GetMapping("/api/orders/health-check/ok")
     public String healthOk() {
         log.info("ok");
